@@ -26,6 +26,8 @@ export function Glyph({ size = 26, animated = true }: { size?: number; animated?
 const NAV = [
   { href: "/explorer", label: "Explorer" },
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/methodology", label: "Methodology" },
+  { href: "/view3d", label: "3D Moon" },
 ] as const;
 
 function UtcClock() {
