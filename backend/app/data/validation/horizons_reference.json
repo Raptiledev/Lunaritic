@@ -1,0 +1,642 @@
+{
+ "retrieved_utc": "2026-11-10T05:44:34Z",
+ "source": "JPL Horizons API, observer table, quantity 4 (airless apparent az/el), CENTER=coord@301",
+ "cases": [
+  {
+   "site": {
+    "name": "Site01 centre (south pole)",
+    "lat": -89.46316,
+    "lon_east": 222.5104,
+    "height_m": 1944.8
+   },
+   "body": "SUN",
+   "provenance": "Target body name: Sun (10)                        {source: DE441} | https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&CENTER=%27coord%40301%27&COORD_TYPE=%27GEODETIC%27&SITE_COORD=%27222.5104%2C-89.46316%2C1.9447999999999999%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272027-01-01+00%3A00%27&STOP_TIME=%272027-03-01+00%3A00%27&STEP_SIZE=%2773+h%27&QUANTITIES=%274%27&ANG_FORMAT=%27DEG%27&APPARENT=%27AIRLESS%27&CSV_FORMAT=%27YES%27&EXTRA_PREC=%27YES%27&TIME_DIGITS=%27SECONDS%27&OBJ_DATA=%27NO%27",
+   "rows": [
+    {
+     "utc": "2027-01-01T00:00:00Z",
+     "azimuth_deg": 40.612702454,
+     "elevation_deg": 1.421465357
+    },
+    {
+     "utc": "2027-01-04T01:00:00Z",
+     "azimuth_deg": 3.581196308,
+     "elevation_deg": 1.503190836
+    },
+    {
+     "utc": "2027-01-07T02:00:00Z",
+     "azimuth_deg": 326.511733907,
+     "elevation_deg": 1.367460588
+    },
+    {
+     "utc": "2027-01-10T03:00:00Z",
+     "azimuth_deg": 289.437982298,
+     "elevation_deg": 1.041233332
+    },
+    {
+     "utc": "2027-01-13T04:00:00Z",
+     "azimuth_deg": 252.392035891,
+     "elevation_deg": 0.631355692
+    },
+    {
+     "utc": "2027-01-16T05:00:00Z",
+     "azimuth_deg": 215.397515595,
+     "elevation_deg": 0.275412338
+    },
+    {
+     "utc": "2027-01-19T06:00:00Z",
+     "azimuth_deg": 178.464258721,
+     "elevation_deg": 0.081504033
+    },
+    {
+     "utc": "2027-01-22T07:00:00Z",
+     "azimuth_deg": 141.577077319,
+     "elevation_deg": 0.089434252
+    },
+    {
+     "utc": "2027-01-25T08:00:00Z",
+     "azimuth_deg": 104.69110339,
+     "elevation_deg": 0.266101955
+    },
+    {
+     "utc": "2027-01-28T09:00:00Z",
+     "azimuth_deg": 67.759921615,
+     "elevation_deg": 0.514742337
+    },
+    {
+     "utc": "2027-01-31T10:00:00Z",
+     "azimuth_deg": 30.764604052,
+     "elevation_deg": 0.701209851
+    },
+    {
+     "utc": "2027-02-03T11:00:00Z",
+     "azimuth_deg": 353.712604068,
+     "elevation_deg": 0.710886558
+    },
+    {
+     "utc": "2027-02-06T12:00:00Z",
+     "azimuth_deg": 316.627692167,
+     "elevation_deg": 0.503014457
+    },
+    {
+     "utc": "2027-02-09T13:00:00Z",
+     "azimuth_deg": 279.54152377,
+     "elevation_deg": 0.129647827
+    },
+    {
+     "utc": "2027-02-12T14:00:00Z",
+     "azimuth_deg": 242.48528606,
+     "elevation_deg": -0.289580582
+    },
+    {
+     "utc": "2027-02-15T15:00:00Z",
+     "azimuth_deg": 205.481571617,
+     "elevation_deg": -0.621969559
+    },
+    {
+     "utc": "2027-02-18T16:00:00Z",
+     "azimuth_deg": 168.534312609,
+     "elevation_deg": -0.774402158
+    },
+    {
+     "utc": "2027-02-21T17:00:00Z",
+     "azimuth_deg": 131.618047917,
+     "elevation_deg": -0.720685483
+    },
+    {
+     "utc": "2027-02-24T18:00:00Z",
+     "azimuth_deg": 94.68737402,
+     "elevation_deg": -0.509631926
+    },
+    {
+     "utc": "2027-02-27T19:00:00Z",
+     "azimuth_deg": 57.707203244,
+     "elevation_deg": -0.257370461
+    }
+   ]
+  },
+  {
+   "site": {
+    "name": "Site01 centre (south pole)",
+    "lat": -89.46316,
+    "lon_east": 222.5104,
+    "height_m": 1944.8
+   },
+   "body": "SUN",
+   "provenance": "Target body name: Sun (10)                        {source: DE441} | https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&CENTER=%27coord%40301%27&COORD_TYPE=%27GEODETIC%27&SITE_COORD=%27222.5104%2C-89.46316%2C1.9447999999999999%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272030-06-01+00%3A00%27&STOP_TIME=%272030-07-01+00%3A00%27&STEP_SIZE=%275+d%27&QUANTITIES=%274%27&ANG_FORMAT=%27DEG%27&APPARENT=%27AIRLESS%27&CSV_FORMAT=%27YES%27&EXTRA_PREC=%27YES%27&TIME_DIGITS=%27SECONDS%27&OBJ_DATA=%27NO%27",
+   "rows": [
+    {
+     "utc": "2030-06-01T00:00:00Z",
+     "azimuth_deg": 319.730457834,
+     "elevation_deg": 0.232040773
+    },
+    {
+     "utc": "2030-06-06T00:00:00Z",
+     "azimuth_deg": 258.510376836,
+     "elevation_deg": -0.174191435
+    },
+    {
+     "utc": "2030-06-11T00:00:00Z",
+     "azimuth_deg": 197.402003507,
+     "elevation_deg": -0.441130525
+    },
+    {
+     "utc": "2030-06-16T00:00:00Z",
+     "azimuth_deg": 136.435719634,
+     "elevation_deg": -0.140890389
+    },
+    {
+     "utc": "2030-06-21T00:00:00Z",
+     "azimuth_deg": 75.460615485,
+     "elevation_deg": 0.543057792
+    },
+    {
+     "utc": "2030-06-26T00:00:00Z",
+     "azimuth_deg": 14.332466813,
+     "elevation_deg": 1.03924992
+    },
+    {
+     "utc": "2030-07-01T00:00:00Z",
+     "azimuth_deg": 313.083689467,
+     "elevation_deg": 0.978675578
+    }
+   ]
+  },
+  {
+   "site": {
+    "name": "Site01 centre (south pole)",
+    "lat": -89.46316,
+    "lon_east": 222.5104,
+    "height_m": 1944.8
+   },
+   "body": "EARTH",
+   "provenance": "Target body name: Earth (399)                     {source: DE441} | https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27399%27&CENTER=%27coord%40301%27&COORD_TYPE=%27GEODETIC%27&SITE_COORD=%27222.5104%2C-89.46316%2C1.9447999999999999%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272027-01-01+00%3A00%27&STOP_TIME=%272027-03-01+00%3A00%27&STEP_SIZE=%2773+h%27&QUANTITIES=%274%27&ANG_FORMAT=%27DEG%27&APPARENT=%27AIRLESS%27&CSV_FORMAT=%27YES%27&EXTRA_PREC=%27YES%27&TIME_DIGITS=%27SECONDS%27&OBJ_DATA=%27NO%27",
+   "rows": [
+    {
+     "utc": "2027-01-01T00:00:00Z",
+     "azimuth_deg": 144.64134005,
+     "elevation_deg": -6.686215913
+    },
+    {
+     "utc": "2027-01-04T01:00:00Z",
+     "azimuth_deg": 142.066368002,
+     "elevation_deg": -7.291924446
+    },
+    {
+     "utc": "2027-01-07T02:00:00Z",
+     "azimuth_deg": 138.252237339,
+     "elevation_deg": -5.264019914
+    },
+    {
+     "utc": "2027-01-10T03:00:00Z",
+     "azimuth_deg": 134.135740266,
+     "elevation_deg": -1.451382941
+    },
+    {
+     "utc": "2027-01-13T04:00:00Z",
+     "azimuth_deg": 130.792827638,
+     "elevation_deg": 2.769095373
+    },
+    {
+     "utc": "2027-01-16T05:00:00Z",
+     "azimuth_deg": 129.853700213,
+     "elevation_deg": 5.720394783
+    },
+    {
+     "utc": "2027-01-19T06:00:00Z",
+     "azimuth_deg": 132.742297003,
+     "elevation_deg": 5.643833428
+    },
+    {
+     "utc": "2027-01-22T07:00:00Z",
+     "azimuth_deg": 138.520355184,
+     "elevation_deg": 1.849934525
+    },
+    {
+     "utc": "2027-01-25T08:00:00Z",
+     "azimuth_deg": 143.47543945,
+     "elevation_deg": -3.417761409
+    },
+    {
+     "utc": "2027-01-28T09:00:00Z",
+     "azimuth_deg": 144.822491577,
+     "elevation_deg": -6.88776197
+    },
+    {
+     "utc": "2027-01-31T10:00:00Z",
+     "azimuth_deg": 142.736453139,
+     "elevation_deg": -7.355517131
+    },
+    {
+     "utc": "2027-02-03T11:00:00Z",
+     "azimuth_deg": 138.866055165,
+     "elevation_deg": -5.165643338
+    },
+    {
+     "utc": "2027-02-06T12:00:00Z",
+     "azimuth_deg": 134.830932101,
+     "elevation_deg": -1.239450559
+    },
+    {
+     "utc": "2027-02-09T13:00:00Z",
+     "azimuth_deg": 131.820185615,
+     "elevation_deg": 3.01837969
+    },
+    {
+     "utc": "2027-02-12T14:00:00Z",
+     "azimuth_deg": 130.785642624,
+     "elevation_deg": 5.847503665
+    },
+    {
+     "utc": "2027-02-15T15:00:00Z",
+     "azimuth_deg": 132.484256743,
+     "elevation_deg": 5.650133228
+    },
+    {
+     "utc": "2027-02-18T16:00:00Z",
+     "azimuth_deg": 136.739542225,
+     "elevation_deg": 1.95678139
+    },
+    {
+     "utc": "2027-02-21T17:00:00Z",
+     "azimuth_deg": 141.524690112,
+     "elevation_deg": -3.308509263
+    },
+    {
+     "utc": "2027-02-24T18:00:00Z",
+     "azimuth_deg": 143.946834808,
+     "elevation_deg": -6.887145552
+    },
+    {
+     "utc": "2027-02-27T19:00:00Z",
+     "azimuth_deg": 142.777411103,
+     "elevation_deg": -7.307258018
+    }
+   ]
+  },
+  {
+   "site": {
+    "name": "Site01 centre (south pole)",
+    "lat": -89.46316,
+    "lon_east": 222.5104,
+    "height_m": 1944.8
+   },
+   "body": "EARTH",
+   "provenance": "Target body name: Earth (399)                     {source: DE441} | https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27399%27&CENTER=%27coord%40301%27&COORD_TYPE=%27GEODETIC%27&SITE_COORD=%27222.5104%2C-89.46316%2C1.9447999999999999%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272030-06-01+00%3A00%27&STOP_TIME=%272030-07-01+00%3A00%27&STEP_SIZE=%275+d%27&QUANTITIES=%274%27&ANG_FORMAT=%27DEG%27&APPARENT=%27AIRLESS%27&CSV_FORMAT=%27YES%27&EXTRA_PREC=%27YES%27&TIME_DIGITS=%27SECONDS%27&OBJ_DATA=%27NO%27",
+   "rows": [
+    {
+     "utc": "2030-06-01T00:00:00Z",
+     "azimuth_deg": 136.880229515,
+     "elevation_deg": 0.413664017
+    },
+    {
+     "utc": "2030-06-06T00:00:00Z",
+     "azimuth_deg": 130.943368457,
+     "elevation_deg": -5.940386013
+    },
+    {
+     "utc": "2030-06-11T00:00:00Z",
+     "azimuth_deg": 131.280565568,
+     "elevation_deg": -6.677466467
+    },
+    {
+     "utc": "2030-06-16T00:00:00Z",
+     "azimuth_deg": 139.531985866,
+     "elevation_deg": 0.716428439
+    },
+    {
+     "utc": "2030-06-21T00:00:00Z",
+     "azimuth_deg": 144.8754376,
+     "elevation_deg": 6.082670211
+    },
+    {
+     "utc": "2030-06-26T00:00:00Z",
+     "azimuth_deg": 140.897707892,
+     "elevation_deg": 3.267924489
+    },
+    {
+     "utc": "2030-07-01T00:00:00Z",
+     "azimuth_deg": 134.14306858,
+     "elevation_deg": -3.410050886
+    }
+   ]
+  },
+  {
+   "site": {
+    "name": "Apollo 11 (equatorial, for contrast)",
+    "lat": 0.67408,
+    "lon_east": 23.47297,
+    "height_m": 0.0
+   },
+   "body": "SUN",
+   "provenance": "Target body name: Sun (10)                        {source: DE441} | https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&CENTER=%27coord%40301%27&COORD_TYPE=%27GEODETIC%27&SITE_COORD=%2723.47297%2C0.67408%2C0.0%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272027-01-01+00%3A00%27&STOP_TIME=%272027-03-01+00%3A00%27&STEP_SIZE=%2773+h%27&QUANTITIES=%274%27&ANG_FORMAT=%27DEG%27&APPARENT=%27AIRLESS%27&CSV_FORMAT=%27YES%27&EXTRA_PREC=%27YES%27&TIME_DIGITS=%27SECONDS%27&OBJ_DATA=%27NO%27",
+   "rows": [
+    {
+     "utc": "2027-01-01T00:00:00Z",
+     "azimuth_deg": 269.21900004,
+     "elevation_deg": -30.364132924
+    },
+    {
+     "utc": "2027-01-04T01:00:00Z",
+     "azimuth_deg": 269.100710782,
+     "elevation_deg": -67.382825815
+    },
+    {
+     "utc": "2027-01-07T02:00:00Z",
+     "azimuth_deg": 91.072874967,
+     "elevation_deg": -75.554565019
+    },
+    {
+     "utc": "2027-01-10T03:00:00Z",
+     "azimuth_deg": 90.566881854,
+     "elevation_deg": -38.489011716
+    },
+    {
+     "utc": "2027-01-13T04:00:00Z",
+     "azimuth_deg": 90.777703963,
+     "elevation_deg": -1.445624247
+    },
+    {
+     "utc": "2027-01-16T05:00:00Z",
+     "azimuth_deg": 91.358969368,
+     "elevation_deg": 35.545485487
+    },
+    {
+     "utc": "2027-01-19T06:00:00Z",
+     "azimuth_deg": 94.187847893,
+     "elevation_deg": 72.450876843
+    },
+    {
+     "utc": "2027-01-22T07:00:00Z",
+     "azimuth_deg": 266.550318959,
+     "elevation_deg": 70.57673255
+    },
+    {
+     "utc": "2027-01-25T08:00:00Z",
+     "azimuth_deg": 269.065690778,
+     "elevation_deg": 33.715646532
+    },
+    {
+     "utc": "2027-01-28T09:00:00Z",
+     "azimuth_deg": 269.725076974,
+     "elevation_deg": -3.210320649
+    },
+    {
+     "utc": "2027-01-31T10:00:00Z",
+     "azimuth_deg": 270.254662345,
+     "elevation_deg": -40.200669467
+    },
+    {
+     "utc": "2027-02-03T11:00:00Z",
+     "azimuth_deg": 272.171541601,
+     "elevation_deg": -77.240404813
+    },
+    {
+     "utc": "2027-02-06T12:00:00Z",
+     "azimuth_deg": 88.784901177,
+     "elevation_deg": -65.661608705
+    },
+    {
+     "utc": "2027-02-09T13:00:00Z",
+     "azimuth_deg": 89.679864739,
+     "elevation_deg": -28.578725537
+    },
+    {
+     "utc": "2027-02-12T14:00:00Z",
+     "azimuth_deg": 90.05914331,
+     "elevation_deg": 8.477879822
+    },
+    {
+     "utc": "2027-02-15T15:00:00Z",
+     "azimuth_deg": 90.490581406,
+     "elevation_deg": 45.48014838
+    },
+    {
+     "utc": "2027-02-18T16:00:00Z",
+     "azimuth_deg": 93.18828705,
+     "elevation_deg": 82.415479351
+    },
+    {
+     "utc": "2027-02-21T17:00:00Z",
+     "azimuth_deg": 269.542529507,
+     "elevation_deg": 60.658565887
+    },
+    {
+     "utc": "2027-02-24T18:00:00Z",
+     "azimuth_deg": 270.211687488,
+     "elevation_deg": 23.732141878
+    },
+    {
+     "utc": "2027-02-27T19:00:00Z",
+     "azimuth_deg": 270.717049539,
+     "elevation_deg": -13.244742262
+    }
+   ]
+  },
+  {
+   "site": {
+    "name": "Apollo 11 (equatorial, for contrast)",
+    "lat": 0.67408,
+    "lon_east": 23.47297,
+    "height_m": 0.0
+   },
+   "body": "SUN",
+   "provenance": "Target body name: Sun (10)                        {source: DE441} | https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%2710%27&CENTER=%27coord%40301%27&COORD_TYPE=%27GEODETIC%27&SITE_COORD=%2723.47297%2C0.67408%2C0.0%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272030-06-01+00%3A00%27&STOP_TIME=%272030-07-01+00%3A00%27&STEP_SIZE=%275+d%27&QUANTITIES=%274%27&ANG_FORMAT=%27DEG%27&APPARENT=%27AIRLESS%27&CSV_FORMAT=%27YES%27&EXTRA_PREC=%27YES%27&TIME_DIGITS=%27SECONDS%27&OBJ_DATA=%27NO%27",
+   "rows": [
+    {
+     "utc": "2030-06-01T00:00:00Z",
+     "azimuth_deg": 87.777647182,
+     "elevation_deg": -68.751644205
+    },
+    {
+     "utc": "2030-06-06T00:00:00Z",
+     "azimuth_deg": 89.843527173,
+     "elevation_deg": -7.546034689
+    },
+    {
+     "utc": "2030-06-11T00:00:00Z",
+     "azimuth_deg": 91.033732978,
+     "elevation_deg": 53.553840274
+    },
+    {
+     "utc": "2030-06-16T00:00:00Z",
+     "azimuth_deg": 267.924466299,
+     "elevation_deg": 65.455611011
+    },
+    {
+     "utc": "2030-06-21T00:00:00Z",
+     "azimuth_deg": 269.536873835,
+     "elevation_deg": 4.487821354
+    },
+    {
+     "utc": "2030-06-26T00:00:00Z",
+     "azimuth_deg": 270.078537496,
+     "elevation_deg": -56.633790596
+    },
+    {
+     "utc": "2030-07-01T00:00:00Z",
+     "azimuth_deg": 90.035795376,
+     "elevation_deg": -62.12859872
+    }
+   ]
+  },
+  {
+   "site": {
+    "name": "Apollo 11 (equatorial, for contrast)",
+    "lat": 0.67408,
+    "lon_east": 23.47297,
+    "height_m": 0.0
+   },
+   "body": "EARTH",
+   "provenance": "Target body name: Earth (399)                     {source: DE441} | https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27399%27&CENTER=%27coord%40301%27&COORD_TYPE=%27GEODETIC%27&SITE_COORD=%2723.47297%2C0.67408%2C0.0%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272027-01-01+00%3A00%27&STOP_TIME=%272027-03-01+00%3A00%27&STEP_SIZE=%2773+h%27&QUANTITIES=%274%27&ANG_FORMAT=%27DEG%27&APPARENT=%27AIRLESS%27&CSV_FORMAT=%27YES%27&EXTRA_PREC=%27YES%27&TIME_DIGITS=%27SECONDS%27&OBJ_DATA=%27NO%27",
+   "rows": [
+    {
+     "utc": "2027-01-01T00:00:00Z",
+     "azimuth_deg": 288.478972384,
+     "elevation_deg": 72.82223894
+    },
+    {
+     "utc": "2027-01-04T01:00:00Z",
+     "azimuth_deg": 287.992741734,
+     "elevation_deg": 70.1884054
+    },
+    {
+     "utc": "2027-01-07T02:00:00Z",
+     "azimuth_deg": 280.280431628,
+     "elevation_deg": 66.911808694
+    },
+    {
+     "utc": "2027-01-10T03:00:00Z",
+     "azimuth_deg": 270.508555845,
+     "elevation_deg": 63.070369123
+    },
+    {
+     "utc": "2027-01-13T04:00:00Z",
+     "azimuth_deg": 262.179100154,
+     "elevation_deg": 59.424399761
+    },
+    {
+     "utc": "2027-01-16T05:00:00Z",
+     "azimuth_deg": 256.845563175,
+     "elevation_deg": 57.988324438
+    },
+    {
+     "utc": "2027-01-19T06:00:00Z",
+     "azimuth_deg": 255.73190201,
+     "elevation_deg": 60.811496779
+    },
+    {
+     "utc": "2027-01-22T07:00:00Z",
+     "azimuth_deg": 261.796557477,
+     "elevation_deg": 67.213787426
+    },
+    {
+     "utc": "2027-01-25T08:00:00Z",
+     "azimuth_deg": 276.877724565,
+     "elevation_deg": 72.336797153
+    },
+    {
+     "utc": "2027-01-28T09:00:00Z",
+     "azimuth_deg": 289.31034638,
+     "elevation_deg": 72.933229215
+    },
+    {
+     "utc": "2027-01-31T10:00:00Z",
+     "azimuth_deg": 288.752936535,
+     "elevation_deg": 70.80889875
+    },
+    {
+     "utc": "2027-02-03T11:00:00Z",
+     "azimuth_deg": 280.272536542,
+     "elevation_deg": 67.53357486
+    },
+    {
+     "utc": "2027-02-06T12:00:00Z",
+     "azimuth_deg": 270.019374403,
+     "elevation_deg": 63.766132572
+    },
+    {
+     "utc": "2027-02-09T13:00:00Z",
+     "azimuth_deg": 261.403179896,
+     "elevation_deg": 60.410094118
+    },
+    {
+     "utc": "2027-02-12T14:00:00Z",
+     "azimuth_deg": 256.233165452,
+     "elevation_deg": 58.87185112
+    },
+    {
+     "utc": "2027-02-15T15:00:00Z",
+     "azimuth_deg": 255.848851043,
+     "elevation_deg": 60.562532419
+    },
+    {
+     "utc": "2027-02-18T16:00:00Z",
+     "azimuth_deg": 262.158202231,
+     "elevation_deg": 65.430423787
+    },
+    {
+     "utc": "2027-02-21T17:00:00Z",
+     "azimuth_deg": 275.939501387,
+     "elevation_deg": 70.399413022
+    },
+    {
+     "utc": "2027-02-24T18:00:00Z",
+     "azimuth_deg": 288.420804615,
+     "elevation_deg": 72.100492434
+    },
+    {
+     "utc": "2027-02-27T19:00:00Z",
+     "azimuth_deg": 288.642709867,
+     "elevation_deg": 70.862151865
+    }
+   ]
+  },
+  {
+   "site": {
+    "name": "Apollo 11 (equatorial, for contrast)",
+    "lat": 0.67408,
+    "lon_east": 23.47297,
+    "height_m": 0.0
+   },
+   "body": "EARTH",
+   "provenance": "Target body name: Earth (399)                     {source: DE441} | https://ssd.jpl.nasa.gov/api/horizons.api?format=text&COMMAND=%27399%27&CENTER=%27coord%40301%27&COORD_TYPE=%27GEODETIC%27&SITE_COORD=%2723.47297%2C0.67408%2C0.0%27&MAKE_EPHEM=%27YES%27&EPHEM_TYPE=%27OBSERVER%27&START_TIME=%272030-06-01+00%3A00%27&STOP_TIME=%272030-07-01+00%3A00%27&STEP_SIZE=%275+d%27&QUANTITIES=%274%27&ANG_FORMAT=%27DEG%27&APPARENT=%27AIRLESS%27&CSV_FORMAT=%27YES%27&EXTRA_PREC=%27YES%27&TIME_DIGITS=%27SECONDS%27&OBJ_DATA=%27NO%27",
+   "rows": [
+    {
+     "utc": "2030-06-01T00:00:00Z",
+     "azimuth_deg": 265.924424662,
+     "elevation_deg": 65.750919108
+    },
+    {
+     "utc": "2030-06-06T00:00:00Z",
+     "azimuth_deg": 279.457153191,
+     "elevation_deg": 59.581920419
+    },
+    {
+     "utc": "2030-06-11T00:00:00Z",
+     "azimuth_deg": 280.970412386,
+     "elevation_deg": 59.804528229
+    },
+    {
+     "utc": "2030-06-16T00:00:00Z",
+     "azimuth_deg": 264.46345758,
+     "elevation_deg": 68.361214066
+    },
+    {
+     "utc": "2030-06-21T00:00:00Z",
+     "azimuth_deg": 244.883702483,
+     "elevation_deg": 72.189695126
+    },
+    {
+     "utc": "2030-06-26T00:00:00Z",
+     "azimuth_deg": 256.927338507,
+     "elevation_deg": 69.318536444
+    },
+    {
+     "utc": "2030-07-01T00:00:00Z",
+     "azimuth_deg": 274.842826966,
+     "elevation_deg": 63.018719917
+    }
+   ]
+  }
+ ]
+}
