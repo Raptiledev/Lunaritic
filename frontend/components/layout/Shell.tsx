@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function Glyph({ size = 26, animated = true }: { size?: number; animated?: boolean }) {
   // Moon limb cut by a horizon, with the Sun (amber) and Earth (blue) grazing it: the polar problem in one mark.
@@ -22,6 +23,11 @@ export function Glyph({ size = 26, animated = true }: { size?: number; animated?
   );
 }
 
+const NAV = [
+  { href: "/explorer", label: "Explorer" },
+  { href: "/dashboard", label: "Dashboard" },
+] as const;
+
 function UtcClock() {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
@@ -38,6 +44,8 @@ function UtcClock() {
 }
 
 export default function Shell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-20 border-b border-night-700/80 bg-night-950/80 backdrop-blur-xl">
@@ -48,6 +56,27 @@ export default function Shell({ children }: { children: React.ReactNode }) {
               LUNARIS
             </span>
           </Link>
+
+          <nav aria-label="Main" className="ml-1 flex items-center gap-0.5 sm:ml-3 sm:gap-1">
+            {NAV.map(({ href, label }) => {
+              const active = pathname === href || pathname.startsWith(`${href}/`);
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={`rounded-md px-2.5 py-1.5 text-xs font-medium tracking-wide transition-colors sm:px-3 ${
+                    active
+                      ? "bg-night-800 text-bone"
+                      : "text-bone-muted hover:bg-night-900 hover:text-bone"
+                  }`}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
+
           <div className="flex-1" />
           <UtcClock />
         </div>
