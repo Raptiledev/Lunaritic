@@ -1,0 +1,334 @@
+LUNARIS — NASA Space Apps Challenge 2026
+Lunar Landing Site Navigator
+Team Alpha 8
+
+Read this before you paste it into the form.
+These answers describe what the repository actually does. The idea for the
+solution and the structure of the program are Team Alpha 8's. A coding
+assistant was used only to help implement and to draft this write-up from
+the code. Add the name of any other Super Intelligence tool you used before
+you submit. This file does not use NASA logos, flags, or mission identifiers.
+
+
+========================================================================
+1. WHAT THE PROJECT IS
+========================================================================
+
+LUNARIS (Lunar Navigation, Illumination, and Risk Intelligence System) is a
+terrain-aware landing-site tool for the lunar south pole.
+
+It answers, for a point on the NASA LOLA Site01 tile ("Connecting ridge"):
+
+  - How steep and rough is the ground, and how well was it actually measured?
+  - Where does the local terrain block the sky?
+  - During a chosen mission window, how much of the Sun is above that
+    horizon, how long is the longest darkness, and is Earth above the horizon?
+  - Which nearby spots and which landing days meet the team's own gates?
+
+It is not an official NASA tool and it does not certify a landing site.
+Sunlight is geometry, not electrical power. Earth above the horizon is not a
+radio link budget. Scores are weighted geometry, not a probability of
+mission success. Hazard thresholds (5 degrees / 10 degrees slope,
+0.25 m / 0.5 m roughness) are illustrative, not NASA requirements.
+
+
+========================================================================
+2. DETAIL SOURCES OF DATA
+    Challenge resources tab:
+    https://www.spaceappschallenge.org/2026/challenges/lunar-landing-site-navigator/?tab=resources
+========================================================================
+
+Listed on the challenge resources tab
+--------------------------------------
+
+Moon Trek — USED, for the picture of the Moon only.
+  What: public LRO Wide Angle Camera mosaic tiles,
+        LRO_WAC_Mosaic_Global_303ppd_v02.
+  Where: https://trek.nasa.gov/moon/
+         https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/default/default028mm
+  How: the browser loads the tiles directly (frontend/utils/trekMoon.ts) and
+       drapes them on the Full Moon view and the landing-page globe.
+  Why: so a person can see where Site01 sits on the Moon.
+  Not used for: slope, horizon, sunlight, Earth visibility, or scoring.
+  Nothing from Trek is stored in the git repository.
+
+Horizons System (JPL) — USED as an independent check, not as the live sky.
+  What: 108 saved airless topocentric Sun and Earth azimuth/elevation
+        samples, retrieved 2026-11-10 from the Horizons API.
+  Where: https://ssd.jpl.nasa.gov/horizons/
+         https://ssd.jpl.nasa.gov/api/horizons.api
+  File: backend/app/data/validation/horizons_reference.json
+        (written by backend/scripts/fetch_horizons_reference.py)
+  Setup of that query:
+        observer on the Moon (CENTER=coord@301), Mean Earth frame,
+        1737.4 km sphere, apparent airless angles (quantity 4).
+        Horizons reported its planetary source as DE441.
+        Sites: Site01 centre (lat -89.46316, east lon 222.5104, height 1944.8 m)
+               and Apollo 11 (lat 0.67408, east lon 23.47297, height 0),
+               the second site only so a non-polar case is in the check.
+        Windows: 2027-01-01 to 2027-03-01, and 2030-06-01 to 2030-07-01.
+  Why: to test that our own SPICE azimuth and elevation match an independent
+       JPL ephemeris. The Validation page and the test suite recompute every
+       epoch. The landing calendar and the analysis pages do not call
+       Horizons while someone is using the app.
+
+Quickmap (Arizona State University) — NOT USED.
+  No request is made to the LROC Quickmap site. Terrain is read from the
+  PGDA GeoTIFF files below, not from Quickmap.
+
+CSA Moon Exploration portal — NOT USED.
+  No Canadian Space Agency page or dataset is read.
+
+
+NASA and JPL products the solution does use
+--------------------------------------------
+
+A. LRO LOLA Site01, 5 metres per pixel (the science terrain)
+  Provider: NASA Planetary Geodynamics Data Archive (PGDA) / LRO LOLA,
+            Barker et al. 2021, doi:10.1016/j.pss.2020.105119.
+  Page:  https://core2.gsfc.nasa.gov/PGDA/LOLA_5mpp/
+  Files: https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site01/
+  Tile:  Site01, "Connecting ridge", 16 km by 16 km, 3200 by 3200 pixels.
+         South polar stereographic metres on a Moon sphere of radius
+         1737.4 km (lat_0 = -90, lon_0 = 0). This is the MOON_ME frame of
+         the DE421 ephemeris, which is why the kernels below are also DE421.
+  The app downloads these on first use into backend/app/data/dem/ when
+  remote data is enabled. They are not committed to git.
+
+  Site01_final_adj_5mpp_surf.tif
+      Surface height, metres.
+      Used for slope (Horn 3x3), aspect, hillshade, roughness (local-plane
+      residual), relief, the terrain horizon, and the 3D site mesh.
+
+  Site01_final_adj_5mpp_ldec.tif
+      Count of LOLA laser returns in each pixel.
+      Used as confidence: a count above zero is a real measurement; the
+      other heights are the published interpolation.
+
+  Site01_final_adj_5mpp_toterr.tif
+      Total height RMS error, metres. Shown as height uncertainty.
+
+  Site01_final_adj_5mpp_slperr.tif
+      Slope RMS error, degrees. Can keep a pixel out of a hazard class
+      when the slope is too uncertain.
+
+  Site01_final_adj_5mpp_slp.tif
+      NASA's own slope map, degrees.
+      Validation only: compared with our Horn slope. Not used to score a site.
+
+  Not used, though named in the dataset registry as a candidate:
+      the wider south-polar LOLA grid (about 80 degrees south).
+      The PGDA average-illumination maps (Mazarico et al.) are listed as a
+      future check and have not been downloaded.
+
+
+B. JPL NAIF SPICE kernels (the live Sun and Earth positions)
+  Provider: NASA JPL NAIF, generic kernels.
+  Root: https://naif.jpl.nasa.gov/pub/naif/generic_kernels/
+  Downloaded on first use into backend/app/data/kernels/. Not in git.
+  Coverage is 1900 to 2050.
+
+  naif0012.tls
+      Leap seconds, so a UTC mission time is the time SPICE expects.
+      .../lsk/naif0012.tls
+
+  pck00011.tpc
+      Planetary constants.
+      .../pck/pck00011.tpc
+
+  moon_080317.tf and moon_assoc_me.tf
+      Frame definitions for the lunar Mean Earth / polar-axis frame.
+      .../fk/satellites/moon_080317.tf
+      .../fk/satellites/moon_assoc_me.tf
+
+  moon_pa_de421_1900-2050.bpc
+      Moon orientation for DE421, 1900–2050.
+      .../pck/moon_pa_de421_1900-2050.bpc
+
+  de421.bsp
+      Positions of the Sun, Earth, and Moon.
+      .../spk/planets/a_old_versions/de421.bsp
+
+  Why DE421 and not the Horizons DE441 file: the LOLA tile is referenced to
+  DE421's MOON_ME frame. Using that same frame means a DEM coordinate and a
+  sky direction are in one system.
+
+  What the code does with them: SPICE spkcpo returns the apparent direction
+  from a fixed surface point to the Sun or the Earth (light time and stellar
+  aberration; the Moon has no atmosphere, so no refraction). That vector is
+  turned into azimuth clockwise from lunar north and elevation above the
+  local horizontal of the 1737.4 km sphere. The apparent disk uses the IAU
+  nominal solar radius 695,700 km and the WGS84 Earth equatorial radius
+  6,378.137 km. Those two radii are published constants, not kernel files.
+
+  Why SPICE for the live calculation, and Horizons for the check: Horizons
+  is the right independent reference for a sample of times. SPICE lets the
+  same geometry run for every time step, every landing day, and every 100 m
+  cell without calling Horizons once per cell.
+
+
+C. Numbers that are not downloaded files
+  Moon radius 1,737,400 m, taken from the CRS of the LOLA GeoTIFFs.
+  IAU 2015 nominal solar radius and the WGS84 Earth equatorial radius, used
+  only to draw the apparent disks.
+
+
+Optional globe files present in the code, not required for the science
+-----------------------------------------------------------------------
+
+The running Full Moon picture uses the Moon Trek tiles above. Two other
+global rasters are referenced if someone builds an offline globe:
+
+  LOLA LDEM_16 (about 1.9 km per pixel), PDS Geosciences Node
+      https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/cylindrical/img/ldem_16.img
+      Would be a coarse bump map only. It is not the Site01 science DEM.
+
+  LROC WAC global morphology mosaic, PDS
+      WAC_GLOBAL_E000N1800_016P.IMG (643 nm, 16 pixels per degree)
+      https://pds.lroc.im-ldi.com/data/LRO-L-LROC-5-RDR-V1.0/LROLRC_2001/DATA/BDR/WAC_GLOBAL/WAC_GLOBAL_E000N1800_016P.IMG
+      An alternate photo map. The pages the user sees load Trek instead.
+
+  A USGS LROC WAC 100 m mosaic (June 2013) is read only by the optional
+  script backend/scripts/build_global_globe_assets.py, and only if that
+  GeoTIFF has been placed on disk.
+
+Site01 at 5 m remains the only terrain used for landing analysis.
+
+
+========================================================================
+3. WHAT RESOURCES WE USED, AND WHY
+========================================================================
+
+Resource                         Used?   Why
+-------------------------------  ------  ---------------------------------
+PGDA LOLA Site01 5 m GeoTIFFs    Yes     Real south-polar heights, return
+                                         counts, and uncertainty. This is
+                                         the ground the horizon and the
+                                         hazard map are built from.
+JPL NAIF SPICE, DE421 set        Yes     Sun and Earth directions in the
+                                         same lunar frame as that DEM, for
+                                         every time the planner needs.
+JPL Horizons                     Yes     Independent check of those
+                                         directions. Not the live engine.
+NASA Moon Trek WAC tiles         Yes     Visual Full Moon only.
+Quickmap                         No      The GeoTIFFs already give the
+                                         heights at 5 m; Quickmap was not
+                                         required.
+CSA Moon Exploration portal      No      Background reading was not turned
+                                         into a data feed. No CSA file is
+                                         loaded.
+PGDA illumination maps           No      Named as a future comparison.
+                                         Not downloaded.
+Machine-learning models          No      Slope, horizon, sunlight, and the
+                                         score are explicit geometry.
+
+Why this set, in one paragraph
+------------------------------
+The south pole is lit or dark because of local relief, not because of a
+global average. A 5 m LOLA tile is small enough to see a ridge and large
+enough to cast horizon rays. SPICE on DE421 puts the Sun and Earth in that
+tile's own frame. Horizons, from the challenge resource list, is the check
+that those angles are right. Trek, also from that list, shows the site on
+the globe without being mixed into the numbers. Quickmap and the CSA portal
+were left unused so every number on screen comes from a file the program
+opens, not from a screenshot of another website.
+
+
+========================================================================
+4. SUPER INTELLIGENCE (SI) TOOLS
+    Form question: Did you utilize any Super Intelligence (SI) tools and
+    software in preparing your solution? If yes, how did you use them?
+========================================================================
+
+Paste this answer. If you also used ChatGPT, Gemini, Copilot, an image
+generator, or another model, add that name in the first sentence. Do not
+leave a tool off the list.
+
+Yes. We used a large language model inside the Cursor editor as a coding
+and writing assistant.
+
+How it was used
+  - To help write, revise, and explain source code, tests, and comments.
+  - To help check that the written data citations match the URLs and files
+    in the repository.
+  - To help draft this submission text from the code.
+
+How it was not used
+  - It did not come up with the idea of how to solve the challenge.
+  - It did not choose the program structure. The sections of LUNARIS
+    (mission console, explorer, analysis, slip planner, comparison,
+    validation, 3D view, report) and the split between a Python calculation
+    service and a web interface are the team's design.
+  - It did not choose Site01, the DE421 frame, the horizon method, or the
+    explainable gates-then-weights score. Those decisions are the team's.
+  - No machine-learning model runs inside LUNARIS. The score is a weighted
+    sum of sunlight, darkness, Earth visibility, and terrain. It is not a
+    model prediction.
+  - No image, video, or audio in the project was generated by an SI tool.
+    The Moon picture is the NASA Trek / LRO WAC mosaic. There is no SI
+    watermark because there is no SI-generated image or video.
+  - No NASA logo, flag, or mission identifier was generated or modified.
+    The interface states that LUNARIS is not an official NASA tool.
+
+Where this is recorded
+  - This file, docs/SPACEAPPS_SUBMISSION_ANSWERS.txt, is the descriptive
+    text and metadata for the SI-assisted code and for this write-up.
+  - Scientific numbers are computed from the NASA and JPL files named in
+    section 2. They are not model-invented values.
+
+
+========================================================================
+5. IDEA AND STRUCTURE (OURS, NOT THE TOOL'S)
+========================================================================
+
+Idea, Team Alpha 8
+  At the south pole the Sun and Earth stay near the horizon, so a ridge a
+  few kilometres away can decide sunlight and a direct view of Earth. The
+  idea is to stand on a real LOLA surface, compute that local horizon, and
+  compare it with JPL Sun and Earth directions over the dates a crew might
+  land. The result should stay explainable: show the terrain, the sky, and
+  the gates, and refuse to show a number the data cannot support.
+
+Structure of the program, Team Alpha 8
+  backend/   calculation service
+             terrain load, slope and hazard, horizon rays, SPICE ephemeris,
+             visibility over time, calendar, maps, explainable score,
+             Horizons comparison.
+  frontend/  the console a person uses
+             dashboard, explorer, analysis, slip planner, comparison,
+             validation, 3D view, methodology, report.
+  data       NASA and JPL files downloaded on use, kept out of git.
+             The dataset registry records provider, role, frame, and units.
+             Unknown fields stay empty rather than being filled in.
+
+The coding assistant followed that structure. It did not replace it.
+
+
+========================================================================
+6. SHORT FORM ANSWERS (if the site has smaller boxes)
+========================================================================
+
+Data sources (short)
+  NASA PGDA / LRO LOLA Site01 5 m GeoTIFFs (height, LOLA return count,
+  height uncertainty, slope uncertainty, and NASA's slope map) from
+  https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site01/.
+  JPL NAIF SPICE DE421 kernels from
+  https://naif.jpl.nasa.gov/pub/naif/generic_kernels/
+  (leap seconds, planetary constants, lunar frames, lunar orientation,
+  de421.bsp) for live Sun and Earth directions.
+  JPL Horizons API (https://ssd.jpl.nasa.gov/horizons/) as a saved
+  108-epoch check, not as the live ephemeris.
+  NASA Moon Trek LRO WAC tiles (https://trek.nasa.gov/moon/) for the
+  Full Moon picture only.
+  Quickmap and the CSA Moon Exploration portal were not used.
+
+SI (short)
+  Yes. A large language model in Cursor helped implement code and draft
+  this text. The solution idea and the program structure are Team Alpha 8's.
+  No SI-generated images, video, audio, or NASA branding. No machine-learning
+  model is part of the scoring.
+
+Why these resources (short)
+  LOLA gives the real ridge. SPICE puts the Sun and Earth in that ridge's
+  coordinate frame for every time step. Horizons checks those angles.
+  Trek shows the site on the Moon and is kept out of the calculations.

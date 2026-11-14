@@ -1,0 +1,447 @@
+LUNARIS rebuild prompts
+NASA Space Apps 2026 · Lunar Landing Site Navigator · Team Alpha 8
+
+How to use this file
+--------------------
+Paste ONE prompt into a fresh coding session. Wait until that phase builds,
+runs, and its tests pass. Then paste the next prompt into the same session.
+Do not paste the whole file at once. The app is a Next.js site plus a
+Python calculation service. Starting at Next.js is prompt 1. The science
+cannot live in the browser alone, so prompt 2 creates the backend before
+any terrain number is shown.
+
+Paste the STANDING RULES at the top of every prompt, then the phase text.
+
+
+========================================================================
+STANDING RULES  (paste above every phase)
+========================================================================
+
+You are building LUNARIS, a terrain-aware lunar south-polar landing tool
+for Team Alpha 8. It is not an official NASA tool and must say so in the
+interface. Do not draw NASA logos, flags, or mission identifiers.
+
+Build only this phase. Do not start the next phase.
+
+Science rules:
+- Show a number only when it was computed from real inputs or from a test
+  fixture that is labelled synthetic. Never fill a missing dataset field
+  with a guess. Unknown stays null and the UI says "not recorded" or
+  "not computed".
+- Sunlight is geometry, not electrical power. Earth above the horizon is
+  not a radio link. Scores are weighted geometry, not a mission-success
+  probability and not a machine-learning score.
+- Hazard thresholds are illustrative, not NASA requirements.
+- Amber means the Sun only. Blue means Earth only. Green, amber-orange,
+  and red appear only on hazard classes. Everything else is a neutral
+  dark "regolith" interface.
+- Do not commit frontend/node_modules, backend/.venv, backend/venv,
+  GeoTIFFs, or SPICE kernels.
+- Python 3.11+. Next.js 14 App Router, TypeScript, Tailwind. No extra
+  UI framework.
+
+
+========================================================================
+PROMPT 1 — Next.js shell, no science yet
+========================================================================
+
+Create a repository folder LunarNavigator with a frontend Next.js 14 app
+(TypeScript, Tailwind, App Router, no src directory) named lunaris-frontend.
+
+Fonts via next/font: Space Grotesk for body, Syne for display, JetBrains
+Mono for numbers. Tailwind palette:
+  night-950 #04060a through night-500 #3d465a
+  bone #efe9dc, bone-muted #9e998e, bone-faint #6a675f
+  sun #ffb547, earth #5aaeff
+  hazard ok #6fd6a0, caution #f2a93b, high #f07178
+
+Build a shell used by every page:
+  left navigation, top bar with a UTC clock, footer line
+  "Team Alpha 8 · NASA Space Apps Challenge 2026 · Lunar Landing Site
+  Navigator · Not an official NASA tool".
+  Nav items, in this order, each marked with its later phase so empty
+  pages can say they are not built yet:
+    /dashboard     Mission          Phase 1
+    /explorer      Explorer         Phase 2
+    /view3d        3D               Phase 10
+    /analysis      Analysis         Phases 3-5
+    /planner       Slip Planner     Phase 7
+    /validation    Validation       Phase 8
+    /comparison    Compare          Phase 9
+    /timeline      Timeline         Phase 10
+    /report        Report           Phase 10
+    /methodology   Data & Method    Phase 1
+
+Landing page at / titled LUNARIS. Subtitle: "Where the Sun skims the
+horizon, metres decide everything." Three pillars with no fake numbers:
+real LOLA terrain, Sun and Earth horizons, explainable scores. Links to
+/dashboard, /methodology, and /view3d.
+
+Every page except / and /dashboard and /methodology renders a clear
+"Not built yet" panel. Dashboard shows a mission form that validates only
+in the browser: site name, latitude, east longitude, UTC date, UTC time,
+duration in days, observer height in metres. Store it in React context
+and localStorage under lunaris.mission.v1. Do not call an API yet.
+Methodology lists these principles as static text: record source,
+resolution, frame, and vertical reference; never guess unknowns; do not
+show simulated results as real; Earth visibility is geometric; sunlight
+is geometric; weights are not NASA requirements; a test passes only
+after it has been run.
+
+Add .gitignore for node_modules, .next, .env, .env.local.
+npm run lint must be tsc --noEmit and must pass.
+Do not add a backend in this phase.
+
+
+========================================================================
+PROMPT 2 — Python API and the dataset registry
+========================================================================
+
+Add backend/ as a FastAPI app. Layout:
+  backend/app/main.py
+  backend/app/core/config.py
+  backend/app/api/routes/{health,datasets}.py
+  backend/app/schemas/datasets.py
+  backend/app/services/dataset_registry.py
+  backend/app/data/datasets.json
+  backend/requirements.txt
+  backend/.env.example
+
+Dependencies: fastapi, uvicorn[standard], pydantic, pydantic-settings,
+pytest, httpx. Settings from environment prefix LUNARIS_, data_dir
+defaulting to backend/app/data, CORS for http://localhost:3000.
+
+Endpoints:
+  GET /api/health -> name, version, status ok
+  GET /api/datasets -> the registry
+
+datasets.json records products but does not download them. Status in the
+file may say not_acquired. The registry code sets status to acquired only
+when every named file is on disk. Fields that are not known stay null.
+Include these entries, with provider, role, url, filename, units, and
+notes, and leave vertical_reference and product_date null:
+
+1. Site01 LDEM surface height. File Site01_final_adj_5mpp_surf.tif.
+   NASA PGDA / LRO LOLA, Barker et al. 2021.
+   https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site01
+   and the description page https://core2.gsfc.nasa.gov/PGDA/LOLA_5mpp/
+   Role: elevation for slope, aspect, hillshade, roughness, horizon.
+   5 m pixels. South polar stereographic on a 1737.4 km sphere,
+   lat_0=-90, lon_0=0, MOON_ME of DE421. Site01 Connecting ridge,
+   16 km by 16 km.
+
+2. Site01 LDEC, LOLA return count per pixel. Confidence: measured versus
+   interpolated. File Site01_final_adj_5mpp_ldec.tif.
+
+3. Site01 total Z RMS error, metres. File Site01_final_adj_5mpp_toterr.tif.
+
+4. Site01 slope RMS error, degrees. File Site01_final_adj_5mpp_slperr.tif.
+
+5. Site01 NASA slope, degrees, validation only.
+   File Site01_final_adj_5mpp_slp.tif.
+
+6. NAIF SPICE set, not acquired yet. Files: naif0012.tls, pck00011.tpc,
+   moon_080317.tf, moon_assoc_me.tf, moon_pa_de421_1900-2050.bpc,
+   de421.bsp. Root https://naif.jpl.nasa.gov/pub/naif/generic_kernels/
+   Role: Sun and Earth apparent directions from a surface point.
+   Frame MOON_ME. Coverage 1900-2050. Note that DE421 is required because
+   the LOLA tile uses that frame.
+
+7. JPL Horizons, validation reference only, not a runtime ephemeris.
+   https://ssd.jpl.nasa.gov/horizons/
+   File later: app/data/validation/horizons_reference.json.
+
+Also list, as not_acquired and unused, the wider south-polar LOLA DEM
+candidate. Do not load it.
+
+Frontend: API base URL from NEXT_PUBLIC_API_URL, default
+http://localhost:8000. A small useApi hook. The shell shows API health.
+Methodology reads GET /api/datasets and renders each record. Dashboard
+still does not pretend to analyse. pytest for health and the registry.
+README: how to create the venv, install, run uvicorn on port 8000, and
+run the Next.js dev server. Gitignore backend/.venv, backend/venv,
+__pycache__, .pytest_cache.
+
+
+========================================================================
+PROMPT 3 — LOLA terrain engine
+========================================================================
+
+Implement the Site01 DEM loader. Do not download files in this phase.
+The operator places GeoTIFFs in backend/app/data/dem/. Required file is
+the surf GeoTIFF. ldec, toterr, slperr, and slp are optional.
+
+Read with rasterio. Refuse a file whose CRS is not south polar
+stereographic on a sphere of radius 1737400 m with latitude of origin
+-90. Pixel size must be square. Map nodata to NaN.
+
+Projection helpers, tested:
+  lat/lon (east-positive) <-> polar stereographic metres
+  using +proj=stere +lat_0=-90 +lat_ts=-90 +lon_0=0 +k=1 +R=1737400.
+
+From the surf grid compute:
+  slope and aspect by Horn 3x3 on the 5 m grid
+  hillshade
+  roughness as RMS residual from a local plane, 5x5 pixels
+  local relief
+Hazard class is the worst of slope and roughness. Default illustrative
+gates: slope caution 5 deg, slope high 10 deg, roughness caution 0.25 m,
+roughness high 0.5 m. If slperr is present, a pixel whose slope
+uncertainty exceeds 5 deg is not given a confident class. These gates
+are not NASA requirements. Label them illustrative in the API notes.
+
+Endpoints under /api/terrain:
+  GET /sites
+  GET /{site_id}/layer/{layer}.png   layers: elevation, slope, hillshade,
+      roughness, hazard, lola_count, z_uncertainty
+  GET /{site_id}/legend/{layer}
+  GET /{site_id}/point?x=&y=  and also lat/lon
+  GET /{site_id}/summary?x=&y=&radius_m=
+Point payload includes row, col, lat, lon, height, slope, aspect,
+roughness, hazard, LOLA return count when ldec exists, height uncertainty
+when toterr exists. Missing optional layers return null, not zero.
+Outside the tile is HTTP 422. Missing surf is HTTP 404.
+
+Tests use a tiny synthetic plane on the real Site01 grid geometry and
+must say in the test name or docstring that the grid is synthetic, not
+lunar. Also test CRS rejection and lat/lon of the real Site01 corners
+against the known bounds x from -19000 to -3000 m, y from -20000 to
+-4000 m. Add scripts/inspect_dem.py to print metadata of whatever is
+in the dem folder. Gitignore backend/app/data/dem except .gitkeep files.
+
+
+========================================================================
+PROMPT 4 — Explorer page
+========================================================================
+
+Replace the Explorer placeholder. On load, GET /api/terrain/sites.
+If the list is empty, say to put the Site01 surf file in
+backend/app/data/dem/. Do not invent a map.
+
+When a site exists, show the PNG layer, a legend that matches the
+backend colours, and click-to-pick. Clicking calls the point endpoint
+and can set that point as the mission target in the existing mission
+context (latitude, longitude). Show a radius summary (100, 300, 1000 m)
+with hazard fractions and the fraction of pixels that have a LOLA
+return. Layers that need ldec or toterr are disabled with the reason
+until those files exist. A loader covers the map until the PNG has
+actually loaded. No fake terrain.
+
+
+========================================================================
+PROMPT 5 — Terrain horizon
+========================================================================
+
+Add a horizon service. For one observer on the DEM, cast rays at 1 degree
+azimuth steps, sample every 5 m out to 20 km. Azimuth is clockwise from
+local lunar north. On the polar stereographic grid, grid azimuth equals
+true azimuth plus east longitude. Elevation of a sample uses the sphere,
+not a flat plane:
+
+  r0 = R + z_observer, r1 = R + z_sample, theta = distance / R
+  elevation = atan2(r1*cos(theta) - r0, r1*sin(theta))
+
+R is 1737400 m. The horizon in that direction is the maximum elevation
+along the ray. If the ray leaves the tile before 20 km, mark it
+incomplete: that horizon is a lower bound because terrain outside the
+tile is unknown.
+
+Also compute the visible fraction of a disk given horizon elevation,
+disk-centre elevation, and angular radius. GET
+/api/terrain/{site_id}/horizon returns the profile, incompleteness
+flags, and the observer lat, lon, and height.
+
+Tests: synthetic ridge on the Site01 grid geometry, labelled synthetic.
+A wall in one direction must raise only that sector. A ray that exits
+the grid must be flagged incomplete. Wire a horizon panel on the
+Explorer for the selected point. If the point is missing, the panel
+says the horizon is not computed. It must not draw a fake skyline.
+
+
+========================================================================
+PROMPT 6 — SPICE Sun and Earth
+========================================================================
+
+Add spiceypy. Ephemeris service loads, in this order, from
+backend/app/data/kernels:
+  naif0012.tls, pck00011.tpc, moon_080317.tf, moon_assoc_me.tf,
+  moon_pa_de421_1900-2050.bpc, de421.bsp
+If any file is missing, the endpoint returns 503 naming the missing
+files. Do not substitute another ephemeris.
+
+Observer position is height above the 1737.4 km sphere, expressed in
+MOON_ME. Use spkcpo with aberration correction LT+S. Azimuth is
+atan2(east, north), clockwise from lunar north, 0 to 360. Elevation is
+asin(up / range). Apparent angular radius uses solar radius 695700 km
+and Earth equatorial radius 6378.137 km. elevation_deg is the disk
+centre, not the limb.
+
+GET /api/ephemeris/status and GET /api/ephemeris/track with lat, lon,
+height_m, start, stop, step_min, for bodies SUN and EARTH. Cap the
+sample count. Times outside 1900-2050 return a clear error.
+
+Tests skip when the kernels are not installed. Do not commit kernels.
+Gitignore backend/app/data/kernels except .gitkeep.
+
+
+========================================================================
+PROMPT 7 — Visibility over a mission window
+========================================================================
+
+Combine the horizon profile with the SPICE track. At each time step:
+  Sun is lit if any part of the solar disk is above the terrain horizon.
+  sunlight_mean is the time average of the visible fraction of the disk.
+  Earth is in view if at least half of Earth's disk is above the horizon.
+Build contiguous periods and the longest darkness.
+State the limits in the response notes:
+  an incomplete horizon makes sunlight and Earth visibility upper bounds
+  and darkness a lower bound; events are timed only to half a step;
+  there is no power model and no link budget.
+
+GET /api/analysis/{site_id}/visibility.
+The Analysis page uses the mission target and window. A button runs the
+request. Before it is run, show "Not computed". Show the Sun and Earth
+elevation series against the horizon in their colours, the lit fraction,
+the longest darkness, and the notes. Cache the last result in React
+context so later pages can read it, and mark it stale if the target or
+window changes.
+
+
+========================================================================
+PROMPT 8 — Illumination maps and the slip calendar
+========================================================================
+
+Precompute a horizon at every 100 m node of the tile. Cache that grid
+under backend/app/data/cache, which is gitignored. One SPICE track for
+the window is reused for every node. Each node must use the same disk
+test as the single-point analysis. A test on a synthetic site must show
+that a node result matches analyse() at that node.
+
+GET /api/analysis/{site_id}/maps/status and GET .../maps.
+Maps: fraction of time the Sun is lit, fraction of time Earth is in
+view, longest darkness in hours. Also return the brightest cells.
+On the Explorer, render these only after a real map response. Colour
+sun maps in the sun ramp and Earth maps in the earth ramp.
+
+Slip Planner page: 120 consecutive landing dates. One long SPICE track
+is sliced into mission windows of the chosen duration. Judge each day
+with the same rules as Analysis. GET
+/api/analysis/{site_id}/calendar. Show a calendar, not a fake one.
+Defaults a user can edit, labelled illustrative: at least 70 percent
+sunlight, longest darkness no more than 48 hours, Earth in view at
+least 20 percent of the window, and at least 80 percent of nearby 5 m
+pixels in the favorable hazard class.
+GET .../alternatives searches 100 m cells that pass every gate and
+returns a short list. The user can set one as the mission target.
+
+
+========================================================================
+PROMPT 9 — Horizons check
+========================================================================
+
+Add scripts/fetch_horizons_reference.py. It queries
+https://ssd.jpl.nasa.gov/api/horizons.api once and writes
+backend/app/data/validation/horizons_reference.json.
+Observer: coord@301, geodetic, Mean Earth frame, 1737.4 km sphere,
+airless apparent azimuth and elevation (quantity 4).
+Sites: Site01 centre and Apollo 11.
+Windows: 2027-01-01 to 2027-03-01, and 2030-06-01 to 2030-07-01.
+Bodies: Sun 10 and Earth 399.
+Do not call Horizons from the request path of the running app.
+
+Validation service reads that file and recomputes every epoch with
+SPICE. Tolerance 0.001 degree. Report count, max difference, and
+pass or fail. If kernels or the file are missing, say so. Do not invent
+a pass.
+
+Also compare our Horn slope with the NASA slp GeoTIFF when that file
+exists, and summarise LOLA return fraction and height uncertainty from
+ldec and toterr. List two pending checks as not acquired: PGDA
+south-pole illumination maps, and the NASA slope file when it is absent.
+
+GET /api/validation/report?site_id=site01.
+The Validation page shows only that report. pytest skips the numeric
+comparison when kernels are absent, and fails if a comparison is marked
+passed without being run.
+
+
+========================================================================
+PROMPT 10 — Explainable comparison
+========================================================================
+
+Scoring is two layers.
+Hard gates, same numbers as the planner. A candidate that fails is
+ineligible. Still show its soft score so the failure is visible.
+Soft score is a weighted average of four factors, each from 0 to 1:
+  sunlight = lit fraction
+  darkness = 1 - longest_dark_hours / mission_hours, clipped
+  earth = in-view fraction
+  terrain = favorable-pixel fraction
+Default weights 0.35, 0.25, 0.20, 0.20. Negative weights are rejected.
+Normalise to sum to 1. The response includes each contribution
+weight times score, so the total can be read by hand.
+The overall number is not a probability.
+
+POST /api/analysis/{site_id}/compare with up to 6 candidates.
+The Compare page lets the user edit gates and weights, run the
+comparison, and see eligible and ineligible rows. No black-box score.
+
+
+========================================================================
+PROMPT 11 — 3D, timeline, report
+========================================================================
+
+3D page, client-only Three.js, two modes.
+Full Moon: load LRO WAC mosaic tiles in the browser from
+https://trek.nasa.gov/tiles/Moon/EQ/LRO_WAC_Mosaic_Global_303ppd_v02/1.0.0/default/default028mm
+Zoom 2, 8 columns by 4 rows. This image is a photograph for context.
+Do not derive slope or sunlight from it. If the tiles fail, say the
+mosaic is unavailable. Do not draw a made-up photo of the Moon.
+Site mode: GET /api/terrain/{site_id}/mesh?max_dim=160 and show the
+real LOLA surface in metres. Amber marker is the mission target.
+When a SPICE track exists, the light direction follows the Sun.
+State on the page that the globe photo is Trek / LRO WAC and the
+ridge mesh is the 5 m LOLA tile.
+
+Timeline page plays the analysis time series that is already in
+context. If analysis has not been run, say "Not computed" and link
+to Analysis. Do not synthesise a timeline.
+
+Report page reprints the mission, the visibility result, and the
+Horizons validation result for printing. If a section was not run,
+print that it was not run. Add no new numbers.
+
+
+========================================================================
+PROMPT 12 — Fetch data without hanging, then document
+========================================================================
+
+Add remote download, default LUNARIS_REMOTE_DATA=1, which can be set
+to 0 to require files already on disk.
+
+DEM files, only the five Site01 names, from
+https://pgda.gsfc.nasa.gov/data/LOLA_5mpp/Site01/<filename>
+Kernels from the NAIF generic_kernels paths already recorded in the
+registry. Download a file only if it is not already present and
+non-empty. Write the bytes to a temporary file OUTSIDE the backend
+directory, then move it into app/data/dem or app/data/kernels when
+complete. uvicorn --reload watches backend/, so writing the download
+inside that tree restarts the server and the fetch never finishes.
+Send a normal User-Agent. Do not trust HTTP_PROXY from the environment
+for these public NASA and JPL hosts. Reject an HTML or other text body.
+Check size against Content-Length when the server sends it.
+The first /api/terrain/sites call may download. It must return either
+the site list or a 503 whose detail says the fetch failed. It must not
+spin forever. Do not download Quickmap, the CSA portal, LDEM_16, or
+the PGDA illumination maps.
+
+Registry status becomes "remote" when the URL is known but the file is
+not on disk yet, and "acquired" once the file is cached.
+
+Update the README: what the system is, how to run backend and frontend,
+where DEMs and kernels go, that large files are gitignored, and that
+Horizons is a saved check rather than the live sky. Update the
+methodology page only with statements that the code actually implements.
+
+Finish by running pytest and the frontend typecheck. Fix failures in
+this phase only. Do not add a new science product.

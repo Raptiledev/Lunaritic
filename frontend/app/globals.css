@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { height: 100%; }
+body {
+  @apply bg-night-950 text-bone font-sans antialiased;
+  background-image: theme("backgroundImage.limb-wash");
+  background-attachment: fixed;
+}
+
+/* Sparse starfield — atmosphere without competing with content */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -8%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(1px 1px at 8% 18%, rgba(236, 231, 220, 0.55), transparent),
+    radial-gradient(1px 1px at 22% 42%, rgba(236, 231, 220, 0.35), transparent),
+    radial-gradient(1.5px 1.5px at 36% 12%, rgba(236, 231, 220, 0.45), transparent),
+    radial-gradient(1px 1px at 48% 68%, rgba(236, 231, 220, 0.3), transparent),
+    radial-gradient(1px 1px at 61% 28%, rgba(236, 231, 220, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 74% 54%, rgba(236, 231, 220, 0.28), transparent),
+    radial-gradient(1px 1px at 83% 16%, rgba(236, 231, 220, 0.4), transparent),
+    radial-gradient(1px 1px at 91% 72%, rgba(236, 231, 220, 0.32), transparent),
+    radial-gradient(1px 1px at 14% 78%, rgba(236, 231, 220, 0.25), transparent),
+    radial-gradient(1px 1px at 55% 88%, rgba(236, 231, 220, 0.22), transparent);
+  animation: star-drift 80s linear infinite alternate;
+}
+
+:focus-visible { outline: 2px solid #efe9dc; outline-offset: 2px; }
+::selection { background: rgba(255, 181, 71, 0.3); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  body::before { transform: none !important; }
+}
+
+@media print {
+  body { background: white !important; color: black !important; background-image: none !important; }
+  body::before { display: none !important; }
+  header, nav, footer, .print\:hidden, [aria-label="Main"] { display: none !important; }
+  .panel { break-inside: avoid; border-color: #d4d4d4 !important; background: white !important; box-shadow: none !important; }
+  .eyebrow { color: #737373 !important; }
+  a { text-decoration: none; color: inherit; }
+}
+
+@layer components {
+  .panel {
+    @apply relative overflow-hidden rounded-xl border border-night-700/90 bg-night-900/75 backdrop-blur-sm;
+    background-image: theme("backgroundImage.panel-sheen");
+    box-shadow: 0 0 0 1px rgba(236, 231, 220, 0.04), 0 18px 40px -28px rgba(0, 0, 0, 0.85);
+  }
+  .panel-head {
+    @apply flex items-center justify-between gap-3 border-b border-night-700/80 px-4 py-2.5;
+  }
+  .eyebrow {
+    @apply text-[10px] font-medium uppercase tracking-label text-bone-faint;
+  }
+  .num {
+    @apply font-mono tabular-nums tracking-tight;
+  }
+  .input {
+    @apply w-full rounded-lg border border-night-600 bg-night-950/90 px-2.5 py-1.5 text-sm text-bone
+      placeholder:text-bone-faint transition-colors
+      focus:border-bone-muted focus:outline-none focus:ring-1 focus:ring-bone/20;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-night-600 px-3 py-1.5 text-xs
+      font-medium text-bone transition-all duration-200 hover:border-bone-faint hover:bg-night-800
+      disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-primary {
+    @apply border-bone bg-bone text-night-950 hover:border-white hover:bg-white;
+    box-shadow: 0 0 40px -12px rgba(236, 231, 220, 0.18);
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 32px -8px rgba(236, 231, 220, 0.35);
+  }
+  .seg { @apply inline-flex flex-wrap gap-0.5 rounded-lg border border-night-700 bg-night-950/80 p-0.5; }
+  .seg-item {
+    @apply rounded-md px-2.5 py-1 text-xs text-bone-muted transition-colors hover:text-bone
+      disabled:cursor-not-allowed disabled:opacity-35 aria-selected:bg-night-700 aria-selected:text-bone;
+  }
+  .link {
+    @apply text-bone underline decoration-bone-faint/70 underline-offset-2 transition-colors hover:decoration-bone;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-night-600/90 bg-night-950/40
+      px-2 py-0.5 text-[11px] text-bone-muted;
+  }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .page-enter {
+    animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 70ms; }
+  .stagger > *:nth-child(3) { animation-delay: 140ms; }
+  .stagger > *:nth-child(4) { animation-delay: 210ms; }
+  .stagger > *:nth-child(5) { animation-delay: 280ms; }
+  .stagger > * {
+    animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
