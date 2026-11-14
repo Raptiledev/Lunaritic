@@ -2,6 +2,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { api, API_URL } from "@/services/api";
+import { useApi } from "@/hooks/useApi";
+import { MissionProvider } from "@/context/mission";
+import { AnalysisProvider } from "@/context/analysis";
+import MissionStrip from "./MissionStrip";
+import { NAV } from "./nav";
 
 export function Glyph({ size = 26, animated = true }: { size?: number; animated?: boolean }) {
   // Moon limb cut by a horizon, with the Sun (amber) and Earth (blue) grazing it: the polar problem in one mark.
@@ -23,13 +29,6 @@ export function Glyph({ size = 26, animated = true }: { size?: number; animated?
   );
 }
 
-const NAV = [
-  { href: "/explorer", label: "Explorer" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/methodology", label: "Methodology" },
-  { href: "/view3d", label: "3D Moon" },
-] as const;
-
 function UtcClock() {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
@@ -45,54 +44,95 @@ function UtcClock() {
   );
 }
 
+function ApiStatus() {
+  const { data, error, loading, reload } = useApi(api.health);
+  const tone = loading ? "bg-bone-faint animate-pulse-soft" : error ? "bg-haz-high" : "bg-haz-ok animate-pulse-soft";
+  const label = loading ? "Checking API" : error ? "API unreachable" : `API ${data?.version}`;
+  return (
+    <button
+      onClick={reload}
+      className="chip hover:border-bone-faint hover:text-bone"
+      title={error ? `${error} (${API_URL}). Click to retry.` : `Connected to ${API_URL}. Click to re-check.`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${tone}`} aria-hidden />
+      {label}
+    </button>
+  );
+}
+
 export default function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isLanding = pathname === "/";
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-20 border-b border-night-700/80 bg-night-950/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 w-full max-w-[96rem] items-center gap-3 px-4 lg:gap-4 lg:px-6">
-          <Link href="/" className="group flex shrink-0 items-center gap-2.5">
-            <Glyph />
-            <span className="font-display text-[13px] font-semibold tracking-brand text-bone transition-colors group-hover:text-white">
-              LUNARIS
-            </span>
-          </Link>
+    <MissionProvider>
+      <AnalysisProvider>
+        <div className="flex min-h-screen flex-col">
+          <header className="sticky top-0 z-20 border-b border-night-700/80 bg-night-950/80 backdrop-blur-xl">
+            <div className="mx-auto flex h-14 w-full max-w-[96rem] items-center gap-3 px-4 lg:gap-4 lg:px-6">
+              <Link href="/" className="group flex shrink-0 items-center gap-2.5">
+                <Glyph />
+                <span className="font-display text-[13px] font-semibold tracking-brand text-bone transition-colors group-hover:text-white">
+                  LUNARIS
+                </span>
+              </Link>
+              {!isLanding && (
+                <nav aria-label="Main" className="no-scrollbar flex flex-1 items-center gap-0.5 overflow-x-auto">
+                  {NAV.map(({ href, label, short, icon: Icon }) => {
+                    const active = pathname === href;
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        aria-current={active ? "page" : undefined}
+                        title={label}
+                        className={`flex items-center gap-1.5 whitespace-nowrap rounded-md px-2 py-1.5 text-[12px] transition-colors xl:px-2.5 xl:text-[12.5px] ${
+                          active
+                            ? "bg-night-800 text-bone shadow-[inset_0_0_0_1px_rgba(239,233,220,0.12)]"
+                            : "text-bone-muted hover:bg-night-900 hover:text-bone"
+                        }`}
+                      >
+                        <Icon size={14} aria-hidden className={active ? "text-sun" : "opacity-70"} />
+                        <span className="2xl:hidden">{short}</span>
+                        <span className="hidden 2xl:inline">{label}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
+              )}
+              {isLanding && <div className="flex-1" />}
+              <div className="flex shrink-0 items-center gap-3">
+                <UtcClock />
+                <ApiStatus />
+                {isLanding && (
+                  <Link href="/dashboard" className="btn btn-primary hidden sm:inline-flex">
+                    Enter mission
+                  </Link>
+                )}
+              </div>
+            </div>
+            {!isLanding && <MissionStrip />}
+          </header>
 
-          <nav aria-label="Main" className="ml-1 flex items-center gap-0.5 sm:ml-3 sm:gap-1">
-            {NAV.map(({ href, label }) => {
-              const active = pathname === href || pathname.startsWith(`${href}/`);
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  aria-current={active ? "page" : undefined}
-                  className={`rounded-md px-2.5 py-1.5 text-xs font-medium tracking-wide transition-colors sm:px-3 ${
-                    active
-                      ? "bg-night-800 text-bone"
-                      : "text-bone-muted hover:bg-night-900 hover:text-bone"
-                  }`}
-                >
-                  {label}
-                </Link>
-              );
-            })}
-          </nav>
+          <main
+            className={
+              isLanding
+                ? "flex-1"
+                : "mx-auto w-full max-w-7xl flex-1 px-5 py-6 page-enter"
+            }
+          >
+            {children}
+          </main>
 
-          <div className="flex-1" />
-          <UtcClock />
+          <footer className="border-t border-night-800/80">
+            <div className="mx-auto flex w-full max-w-[96rem] flex-col items-center justify-between gap-2 px-4 py-4 text-[11px] text-bone-faint sm:flex-row lg:px-6">
+              <span className="font-display tracking-brand text-bone/70">LUNARIS</span>
+              <span className="text-center">Team Alpha 8 · NASA Space Apps Challenge 2026 · Lunar Landing Site Navigator</span>
+              <span>Not an official NASA tool</span>
+            </div>
+          </footer>
         </div>
-      </header>
-
-      <main className="flex-1">{children}</main>
-
-      <footer className="border-t border-night-800/80">
-        <div className="mx-auto flex w-full max-w-[96rem] flex-col items-center justify-between gap-2 px-4 py-4 text-[11px] text-bone-faint sm:flex-row lg:px-6">
-          <span className="font-display tracking-brand text-bone/70">LUNARIS</span>
-          <span className="text-center">Team Alpha 8 · NASA Space Apps Challenge 2026 · Lunar Landing Site Navigator</span>
-          <span>Not an official NASA tool</span>
-        </div>
-      </footer>
-    </div>
+      </AnalysisProvider>
+    </MissionProvider>
   );
 }
