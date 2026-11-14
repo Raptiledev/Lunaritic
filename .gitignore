@@ -6,7 +6,7 @@ node_modules/
 .next/
 
 # Whole backend stays local for now. Do not push.
-
+backend/
 
 # Backend virtual environments
 backend/.venv/

@@ -1,48 +1,113 @@
-# LUNARIS: Lunar Navigation, Illumination, and Risk Intelligence System
+🌕 LUNARITIC
+Lunar Navigation, Illumination & Risk Intelligence System
 
-Team Alpha 8 · NASA Space Apps Challenge 2026 · "Lunar Landing Site Navigator".
-Not an official NASA tool or certification.
+NASA Space Apps Challenge 2026 | Team Alpha 8
+Challenge: Lunar Landing Site Navigator
 
-## Status: Phase 2 (LOLA terrain engine)
+🚀 About the Project
 
-Phase 2 adds: loader for the PGDA LOLA 5 m/px Site GeoTIFFs (CRS verified, grids cross-checked), slope/aspect/hillshade/roughness/relief,
-configurable hazard classification, point and area queries, PNG layers, and the Lunar Explorer page.
-Place the Site01 files in `backend/app/data/dem/` (surf is required; ldec, toterr, slperr, slp are optional).
-`python scripts/inspect_dem.py` prints the real metadata of whatever is there.
+LUNARITIC is an interactive lunar landing site analysis and mission planning platform designed to help evaluate potential landing locations on the Moon.
 
-Phase 1: FastAPI backend (`/api/health`, `/api/datasets`), dataset registry, Next.js dashboard shell with the six sections,
-mission-configuration form (client-side validation only), and a Data and Methodology page driven by the registry.
+It combines lunar terrain data, sunlight calculations, Earth visibility analysis, and mission planning tools to help users understand the environmental conditions and potential risks associated with different lunar landing sites.
 
-Not implemented yet: horizon, Sun/Earth geometry, scoring, 3D, reports.
-Pages and indicators for those show "Not computed" or "Not built yet" on purpose. No simulated results are displayed.
+Our mission is to turn complex lunar data into clear, understandable insights for future lunar exploration.
 
-## Run
+✨ Key Features
+Lunar Terrain Explorer: Explore elevation, slope, aspect, roughness, hillshade, and terrain hazards.
+Sunlight Analysis: Analyze sunlight availability, darkness duration, sunrise, and sunset.
+Earth Visibility: Evaluate when Earth is visible from a selected lunar location.
+Mission Window Analysis: Analyze illumination and Earth visibility throughout a mission.
+Landing Site Comparison: Compare and rank up to six candidate locations using explainable scoring.
+Landing Date Planner: Evaluate alternative landing dates and nearby suitable locations.
+3D Lunar Visualization: Explore the Moon and Site01 terrain in interactive 3D.
+Mission Timeline: Visualize Sun and Earth visibility throughout the mission.
+Mission Reports: Generate printable mission summaries.
+Scientific Validation: Compare astronomical calculations with JPL Horizons reference data.
+🛰️ Data Sources
 
-Backend (Python 3.11+):
+LUNARITIC uses scientific datasets and tools from:
 
-    cd backend
-    python -m venv .venv && source .venv/bin/activate    # Windows: .venv\Scripts\activate
-    pip install -r requirements.txt
-    cp .env.example .env
-    uvicorn app.main:app --reload --port 8000
-    pytest -q app/tests
+NASA LOLA: Lunar elevation and terrain data.
+NASA/USGS LROC WAC: Lunar surface imagery.
+NAIF SPICE: Sun and Earth position calculations.
+JPL Horizons: Astronomical validation.
 
-Frontend (Node 18.17+):
+Primary terrain data:
+https://core2.gsfc.nasa.gov/PGDA/LOLA_5mpp/
 
-    cd frontend
-    cp .env.example .env.local
-    npm install
-    npm run dev          # http://localhost:3000
-    npm run lint         # TypeScript check
-    npm run build
+SPICE kernels:
+https://naif.jpl.nasa.gov/pub/naif/generic_kernels/
 
-## Layout
+🛠️ Technology Stack
+Component	Technologies
+Frontend	Next.js, React, TypeScript
+Styling	Tailwind CSS
+Backend	Python, FastAPI
+Scientific Computing	NumPy, Rasterio, GDAL, SPICE
+Data	LOLA DEM, GeoTIFF, SPICE Kernels
+⚙️ Getting Started
+Prerequisites
+Python 3.10+ (compatible with project dependencies)
+Node.js 18.17+
+npm
+Backend
+bash
+cd backend
+python -m venv venv
 
-    backend/app/{api/routes,core,services,schemas,models,data,tests}
-    frontend/{app,components,hooks,services,types,utils}
-    docs/
 
-Large data (DEMs, SPICE kernels) goes in `backend/app/data/{dem,kernels}` and is gitignored.
-Dataset facts live in `backend/app/data/datasets.json`. Fields stay `null` until read from the real files.
+Activate the environment and install dependencies:
 
-## Next: Phase 3 (terrain horizon engine)
+bash
+pip install -r requirements.txt
+On Windows PowerShell, if incompatible GDAL/PROJ environment variables are set:
+powershell
+$env:PROJ_LIB=$null
+$env:GDAL_DATA=$null
+
+
+Start the backend:
+
+bash
+uvicorn app.main:app --reload --port 8001
+
+Frontend
+
+Create frontend/.env.local:
+
+env
+NEXT_PUBLIC_API_URL=http://localhost:8001
+
+
+Then run:
+
+bash
+cd frontend
+npm install
+npm run dev
+
+Open the application at:
+
+http://localhost:3000
+
+
+🚧 Current Limitations & Future Scope
+Current high-resolution terrain analysis focuses on Site01.
+Multi-tile and broader regional DEM coverage are not yet implemented.
+PGDA illumination-map cross-validation is pending.
+Some global 3D terrain representations use reference imagery and elevation data rather than a complete high-resolution global DEM.
+
+Future improvements include expanded lunar terrain coverage, additional scientific validation, and enhanced mission planning capabilities.
+
+👥 Team
+
+Team Alpha 8
+NASA Space Apps Challenge 2026
+
+📜 Disclaimer
+
+LUNARITIC is an independent educational and research prototype developed for NASA Space Apps Challenge 2026. It is not an official NASA product or a certified operational landing-site assessment system.
+
+🌑 LUNARITIC
+
+Explore the Moon. Understand the Terrain. Plan with Confidence.
