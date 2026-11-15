@@ -1,4 +1,5 @@
-name: Publish slide deck
+# Publishes the deck/ folder to GitHub Pages on every push to main.
+name: Publish deck to GitHub Pages
 
 on:
   push:
@@ -14,7 +15,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: lunaris-deck
+  group: pages
   cancel-in-progress: true
 
 jobs:
@@ -24,14 +25,10 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Upload deck
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: deck
-
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4

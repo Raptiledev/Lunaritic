@@ -205,6 +205,11 @@ h3 { margin: 0; font-size: 18px; letter-spacing: -0.02em; }
 .tile-meta { margin: 4px 0 0; color: var(--faint); font-family: var(--mono); font-size: 12px; }
 
 .score-split { align-items: start; margin-top: 22px; flex: 1; }
+.intro-split { align-items: start; margin-top: 18px; }
+.slide[aria-label="Introduction"] h2 { max-width: 20ch; }
+.intro-steps { margin-top: 0; gap: 10px; }
+.intro-steps h3 { font-size: 16px; }
+.intro-steps p { font-size: 13.5px; }
 .col-label {
   margin: 0 0 10px;
   color: var(--faint);

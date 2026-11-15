@@ -7,17 +7,17 @@ const PILLARS = [
   {
     icon: Globe2,
     title: "Real LOLA terrain",
-    body: "5 m polar DEM geometry — never a stand-in map. Hazard classes mirror the same grids the backend computes.",
+    body: "Built on real 5 m terrain data of the Moon’s poles, not a placeholder map. The hazard zones you see come from that same data.",
   },
   {
     icon: Compass,
     title: "Sun & Earth horizons",
-    body: "SPICE ephemerides against the local terrain rim. Amber for Sun, blue for Earth — colour that means something.",
+    body: "Precise Sun and Earth positions from NASA data, checked against the surrounding terrain. Amber shows sunlight, blue shows a clear line to Earth.",
   },
   {
     icon: ShieldCheck,
     title: "Explainable scores",
-    body: "Hard gates first, then transparent weighted factors. Every number can be traced back to method and data.",
+    body: "Sites must pass strict safety checks first, then they’re scored on clearly explained factors. Every number can be traced back to where it came from.",
   },
 ] as const;
 
@@ -42,12 +42,11 @@ export default function Landing() {
           </h1>
 
           <p className="mt-5 text-lg leading-snug text-bone sm:text-xl">
-            Where the Sun skims the horizon, metres decide everything.
+            Where the Sun skims the horizon, a few metres decide everything.
           </p>
 
           <p className="mt-4 text-sm leading-relaxed text-bone-muted sm:text-[15px]">
-            Terrain-aware sunlight and direct-to-Earth visibility for polar landing candidates —
-            NASA LOLA geometry, JPL ephemerides, explainable scores.
+            Terrain-aware sunlight and direct-to-Earth visibility for polar landing sites.
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -62,19 +61,6 @@ export default function Landing() {
               Full Moon 3D
             </Link>
           </div>
-
-          <dl className="mt-10 grid grid-cols-3 gap-4 border-t border-night-700/80 pt-5">
-            {[
-              ["Site01", "LOLA 5 m tile"],
-              ["~0.00001°", "Horizons check"],
-              ["Explainable", "scoring gates"],
-            ].map(([k, v]) => (
-              <div key={k}>
-                <dt className="num text-sm text-bone sm:text-base">{k}</dt>
-                <dd className="mt-1 text-[11px] text-bone-faint">{v}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
 
         <div className="order-1 animate-fade-in lg:order-2">
