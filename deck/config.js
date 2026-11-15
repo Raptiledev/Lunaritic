@@ -22,6 +22,6 @@
  *   ?video=demo.mp4
  */
 window.LUNARIS_DECK = {
-  videoUrl: "",
+  videoUrl: "https://www.youtube.com/watch?v=zDDdCVhOvTw",
   appUrl: "",
 };
