@@ -1,6 +1,23 @@
 "use client";
 import type { MissionConfig } from "@/types/api";
 
+/** Four points inside Site01 (Connecting Ridge, x −19000…−3000 m, y −20000…−4000 m).
+ *  Lat/lon come from the same south-polar stereographic sphere as the DEM.
+ *  A challenge shortlist, not a NASA landing designation. */
+export const CURATED_LANDING_POINTS = [
+  { id: "centre", name: "Site01 centre", latitude: "-89.46316", longitude: "222.5104", note: "Tile centre" },
+  { id: "poleward", name: "Poleward ridge", latitude: "-89.55145", longitude: "233.9726", note: "4 km toward the pole" },
+  { id: "flank", name: "Ridge flank", latitude: "-89.54186", longitude: "210.2564", note: "4 km across the tile" },
+  { id: "outer", name: "Outer ridge", latitude: "-89.27675", longitude: "223.1524", note: "5.7 km from the centre" },
+] as const;
+
+function matchesPoint(value: MissionConfig, latitude: string, longitude: string): boolean {
+  const lat = Number(value.latitude), lon = Number(value.longitude);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+  const dLon = Math.abs(lon - Number(longitude)) % 360;
+  return Math.abs(lat - Number(latitude)) < 1e-4 && Math.min(dLon, 360 - dLon) < 1e-3;
+}
+
 export function validate(c: MissionConfig): Record<string, string> {
   const e: Record<string, string> = {};
   const lat = Number(c.latitude), lon = Number(c.longitude), dur = Number(c.durationDays);
@@ -28,8 +45,34 @@ export default function MissionForm({ value, onChange }: { value: MissionConfig;
   const errors = validate(value);
   const set = (k: keyof MissionConfig) => (e: React.ChangeEvent<HTMLInputElement>) =>
     onChange({ ...value, [k]: e.target.value, ...(k === "latitude" || k === "longitude" ? { siteId: undefined } : {}) });
+  const applyPoint = (point: (typeof CURATED_LANDING_POINTS)[number]) =>
+    onChange({ ...value, name: point.name, latitude: point.latitude, longitude: point.longitude, siteId: "site01" });
+
   return (
     <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+      <div className="col-span-2">
+        <span className="eyebrow">Curated landing points</span>
+        <div className="mt-1.5 grid grid-cols-2 gap-1.5" role="group" aria-label="Curated landing points inside Site01">
+          {CURATED_LANDING_POINTS.map((point) => {
+            const on = matchesPoint(value, point.latitude, point.longitude);
+            return (
+              <button
+                key={point.id}
+                type="button"
+                aria-pressed={on}
+                onClick={() => applyPoint(point)}
+                className={`rounded-lg border px-2.5 py-2 text-left transition-colors ${
+                  on ? "border-bone bg-night-800 text-bone" : "border-night-600 text-bone-muted hover:border-bone-faint hover:text-bone"
+                }`}
+              >
+                <span className="block text-xs font-medium">{point.name}</span>
+                <span className="num mt-0.5 block text-[10px] text-bone-faint">{point.note} · {point.latitude}°</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-1.5 text-[11px] text-bone-faint">Inside the Site01 Connecting Ridge tile. This shortlist is for the challenge.</p>
+      </div>
       <div className="col-span-2">
         <Field label="Mission name">
           <input className="input" value={value.name} onChange={set("name")} placeholder="Candidate site A" />

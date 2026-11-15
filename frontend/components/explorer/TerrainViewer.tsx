@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Crosshair } from "lucide-react";
 import { api, layerUrl } from "@/services/api";
+import { type SendResult, useCompareList } from "@/context/compareList";
 import { useMission } from "@/context/mission";
 import DemLoader from "@/components/layout/DemLoader";
 import HorizonPanel from "./HorizonPanel";
@@ -38,6 +40,7 @@ function Stat({ label, value, unit, sub }: { label: string; value: string; unit?
 
 export default function TerrainViewer({ site }: { site: SiteInfo }) {
   const { update } = useMission();
+  const { addPoint } = useCompareList();
   const [layer, setLayer] = useState("hillshade");
   const [point, setPoint] = useState<PointInfo | null>(null);
   const [area, setArea] = useState<AreaSummary | null>(null);
@@ -47,6 +50,7 @@ export default function TerrainViewer({ site }: { site: SiteInfo }) {
   const [legend, setLegend] = useState<{ min?: number; max?: number }>({});
   const [imgLoading, setImgLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [sent, setSent] = useState<SendResult | null>(null);
   const [hover, setHover] = useState<{ x: number; y: number } | null>(null);
   const req = useRef(0);
   const mapLayer = isMapLayer(layer) ? layer : null;
@@ -71,7 +75,7 @@ export default function TerrainViewer({ site }: { site: SiteInfo }) {
   useEffect(() => {
     if (!xy) return;
     const id = ++req.current;
-    setErr(null); setSaved(false);
+    setErr(null); setSaved(false); setSent(null);
     Promise.all([api.point(site.site_id, xy.x, xy.y), api.summary(site.site_id, xy.x, xy.y, radius)])
       .then(([p, a]) => { if (id === req.current) { setPoint(p); setArea(a); } })
       .catch((ex) => { if (id === req.current) setErr(ex instanceof Error ? ex.message : "Request failed"); });
@@ -99,6 +103,15 @@ export default function TerrainViewer({ site }: { site: SiteInfo }) {
     if (!point) return;
     update({ latitude: point.latitude.toFixed(5), longitude: point.longitude_east.toFixed(4), siteId: site.site_id });
     setSaved(true);
+  }
+
+  function sendToCompare() {
+    if (!point) return;
+    setSent(addPoint({
+      name: `Explorer ${point.latitude.toFixed(3)}°`,
+      latitude: point.latitude.toFixed(5),
+      longitude: point.longitude_east.toFixed(4),
+    }));
   }
 
   return (
@@ -214,9 +227,13 @@ export default function TerrainViewer({ site }: { site: SiteInfo }) {
                 sub={point.lola_returns_in_pixel === 0 ? "interpolated" : point.lola_returns_in_pixel == null ? "" : "measured"} />
               <Stat label="Grid x, y (km)" value={`${(point.x_m / 1000).toFixed(1)}, ${(point.y_m / 1000).toFixed(1)}`} />
             </div>
-            <div className="flex items-center gap-3 px-4 py-2.5">
+            <div className="flex flex-wrap items-center gap-3 px-4 py-2.5">
               <button className="btn" onClick={setAsTarget}>Set as mission target</button>
+              <button className="btn" onClick={sendToCompare}>Send to Compare</button>
               {saved && <span className="text-[11px] text-haz-ok">Saved to the mission</span>}
+              {sent === "added" && <span className="text-[11px] text-haz-ok">Added · <Link href="/comparison" className="link">Open Compare</Link></span>}
+              {sent === "duplicate" && <span className="text-[11px] text-bone-muted">Already in Compare · <Link href="/comparison" className="link">Open Compare</Link></span>}
+              {sent === "full" && <span className="text-[11px] text-haz-high">Compare already has 6 points</span>}
             </div>
           </section>
         )}

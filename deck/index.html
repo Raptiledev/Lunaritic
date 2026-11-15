@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LUNARIS — seven slides · NASA Space Apps 2026</title>
+  <meta name="description" content="LUNARIS, a seven-slide deck for the NASA Space Apps 2026 Lunar Landing Site Navigator challenge. Team Alpha 8. One slide embeds the live console." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600&family=Syne:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="deck.css" />
+</head>
+<body>
+  <div class="sky" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <p class="brand">
+      <svg class="glyph" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.25"></circle>
+        <path d="M2.5 14.2 L7 12.6 L10 13.6 L14 11.4 L17.5 13 L21.5 12.2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"></path>
+        <circle cx="6.4" cy="10.4" r="1.7" fill="#ffb547"></circle>
+        <circle cx="17.6" cy="9.6" r="1.3" fill="#5aaeff"></circle>
+      </svg>
+      <span>LUNARIS</span>
+    </p>
+    <p class="topbar-meta">NASA Space Apps 2026 · 7 slides</p>
+  </header>
+
+  <main class="stage" id="stage">
+    <!-- 1 -->
+    <section class="slide is-active" aria-label="Title">
+      <div class="slide-body title-layout">
+        <div>
+          <p class="eyebrow">Team Alpha 8 · Lunar Landing Site Navigator</p>
+          <h1 class="display">LUNARIS</h1>
+          <p class="lede">Lunar Navigation, Illumination, and Risk Intelligence.</p>
+          <p class="quiet">Where the Sun skims the horizon, a few metres decide everything.</p>
+          <dl class="facts">
+            <div><dt>5 m terrain</dt><dd>NASA LOLA, Site01</dd></div>
+            <div><dt>Real positions</dt><dd>Sun and Earth, NASA JPL</dd></div>
+            <div><dt>Checked</dt><dd>108 times against NASA Horizons</dd></div>
+          </dl>
+        </div>
+        <div class="moon" aria-hidden="true">
+          <div class="moon-disc"></div>
+          <svg class="moon-horizon" viewBox="0 0 240 240">
+            <path d="M18 148 L58 132 L92 142 L132 118 L168 136 L222 126" fill="none" stroke="#efe9dc" stroke-width="1.6" stroke-linejoin="round"></path>
+            <circle cx="62" cy="108" r="7" fill="#ffb547"></circle>
+            <circle cx="176" cy="100" r="5" fill="#5aaeff"></circle>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide" aria-label="The problem">
+      <div class="slide-body">
+        <p class="eyebrow">02 — The problem</p>
+        <h2>The south pole hides behind its own ground.</h2>
+        <p class="quiet lead-in">The Sun and Earth stay low. A ridge a few kilometres away can decide whether a lander has power, and whether it can talk to Earth. Checking one site and date today means juggling several expert tools.</p>
+        <ol class="steps">
+          <li>
+            <span class="num">01</span>
+            <div>
+              <h3>Ground</h3>
+              <p>How steep and rough it is, and whether that spot was really measured.</p>
+            </div>
+          </li>
+          <li>
+            <span class="num">02</span>
+            <div>
+              <h3>Sun</h3>
+              <p>How long it clears the surrounding terrain, and the longest darkness a battery must survive.</p>
+            </div>
+          </li>
+          <li>
+            <span class="num">03</span>
+            <div>
+              <h3>Earth</h3>
+              <p>How long Earth is in view for direct radio contact.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide" aria-label="Introduction">
+      <div class="slide-body">
+        <p class="eyebrow">03 — Introduction</p>
+        <h2>A shortlist, then one click into Compare.</h2>
+        <p class="quiet lead-in">Two additions sit on the same Site01 analysis. The mission form opens with four named points on Connecting Ridge. The Explorer sends the point you click into the ranking list, so the coordinates are not copied by hand.</p>
+        <div class="split intro-split">
+          <div>
+            <p class="col-label">Curated landing points</p>
+            <ul class="gates">
+              <li><b>Site01 centre</b> tile centre, the Horizons check</li>
+              <li><b>Poleward ridge</b> 4 km toward the pole</li>
+              <li><b>Ridge flank</b> 4 km across the tile</li>
+              <li><b>Outer ridge</b> 5.7 km from the centre</li>
+            </ul>
+          </div>
+          <div>
+            <p class="col-label">Send to Compare</p>
+            <ul class="steps intro-steps">
+              <li>
+                <span class="num">01</span>
+                <div>
+                  <h3>Click the map</h3>
+                  <p>The Explorer reads that pixel on the 5 m LOLA tile.</p>
+                </div>
+              </li>
+              <li>
+                <span class="num">02</span>
+                <div>
+                  <h3>Send to Compare</h3>
+                  <p>The point is added to the list, up to six, and kept in this browser.</p>
+                </div>
+              </li>
+              <li>
+                <span class="num">03</span>
+                <div>
+                  <h3>Rank them</h3>
+                  <p>Compare uses those coordinates. Nothing is pasted in.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="slide" aria-label="When plans change">
+      <div class="slide-body">
+        <p class="eyebrow">04 — When plans change</p>
+        <h2>The launch slips. Does the site still work?</h2>
+        <ol class="steps">
+          <li>
+            <span class="num">01</span>
+            <div>
+              <h3>Same site, new date</h3>
+              <p>The Slip Planner tests 120 landing dates against your must-haves and shows which still pass.</p>
+            </div>
+          </li>
+          <li>
+            <span class="num">02</span>
+            <div>
+              <h3>Same date, new spot</h3>
+              <p>It searches every 100 m square within 3 km for the nearest point that passes.</p>
+            </div>
+          </li>
+          <li>
+            <span class="num">03</span>
+            <div>
+              <h3>Side by side</h3>
+              <p>Compare up to six points. Each must pass every must-have, then a score you can read ranks them: weight × factor.</p>
+            </div>
+          </li>
+        </ol>
+        <p class="footnote">Example must-haves: 70% of the window in sunlight, at most 48 h of darkness, 20% with Earth in view, 80% favorable ground within 100 m. These are the team’s examples, not NASA requirements.</p>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="slide slide-demo" data-demo aria-label="Live application">
+      <div class="demo-bar">
+        <div>
+          <p class="eyebrow">05 — Demo</p>
+          <p class="demo-path">Mission <span aria-hidden="true">→</span> Analyze <span aria-hidden="true">→</span> Slip Planner <span aria-hidden="true">→</span> Compare</p>
+        </div>
+        <div class="demo-actions">
+          <button class="text-link" id="demo-toggle" type="button" hidden></button>
+          <a class="text-link" id="open-app" href="#" target="_blank" rel="noopener noreferrer">Open the live app</a>
+        </div>
+      </div>
+      <div class="demo-frame" id="demo-frame"></div>
+    </section>
+
+    <!-- 6 -->
+    <section class="slide" aria-label="Validation">
+      <div class="slide-body">
+        <p class="eyebrow">06 — The check</p>
+        <h2>The sky is computed, then compared.</h2>
+        <div class="cards">
+          <article>
+            <p class="col-label sun">Live geometry</p>
+            <h3>JPL NAIF SPICE</h3>
+            <p>NASA’s own toolkit gives the Sun and Earth directions from the landing point, in the same reference frame as the terrain. Earth’s libration is included.</p>
+          </article>
+          <article>
+            <p class="col-label earth">Independent check</p>
+            <h3>JPL Horizons</h3>
+            <p>108 saved NASA answers for Site01 and Apollo 11. The Validation page recomputes them live: agreement to about 0.00001°.</p>
+          </article>
+          <article>
+            <p class="col-label">Honest limits</p>
+            <h3>What we do not claim</h3>
+            <p>Terrain is checked inside the 16 km area, so sunlight and Earth figures are best-case. Sunlight is not power, and Earth in view is not a radio link.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="slide" aria-label="Team and links">
+      <div class="slide-body close-layout">
+        <div>
+          <p class="eyebrow">07 — Team Alpha 8</p>
+          <h2>Fast answers when plans change.</h2>
+          <p class="quiet lead-in">For planners, a quick check of sites and dates. For classrooms, a way to see why the south pole is hard. Next: wider terrain for distant mountains, and more landing areas.</p>
+          <div class="links">
+            <a class="btn" id="close-app" href="#" target="_blank" rel="noopener noreferrer">Open the console</a>
+            <a class="btn ghost" href="https://github.com/Raptiledev/Lunaritic" target="_blank" rel="noopener noreferrer">Repository</a>
+          </div>
+        </div>
+        <aside class="close-note">
+          <p>NASA Space Apps Challenge 2026</p>
+          <p>Lunar Landing Site Navigator</p>
+          <p class="disclaimer">LUNARIS is an independent prototype built for this challenge. It does not certify a landing site, and it is not an official NASA tool.</p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <nav class="dock" aria-label="Slides">
+    <button type="button" id="prev" aria-label="Previous slide">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6 L8.5 12 L14.5 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </button>
+    <ol class="dots" id="dots"></ol>
+    <p class="dock-count" id="count" aria-live="polite">01 / 07</p>
+    <button type="button" id="next" aria-label="Next slide">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6 L15.5 12 L9.5 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </button>
+  </nav>
+
+  <script src="config.js"></script>
+  <script src="deck.js"></script>
+</body>
+</html>
