@@ -12,6 +12,10 @@ backend/app/data/kernels/
 !backend/app/data/*/.gitkeep
 
 # Backend virtual environments
+backend/app/data/cache/*
+backend/app/data/dem/*
+backend/app/data/kernels/*
+!backend/app/data/*/.gitkeep
 backend/.venv/
 backend/venv/
 backend/env/
