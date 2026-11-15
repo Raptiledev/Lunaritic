@@ -22,6 +22,14 @@ backend/env/
 .venv/
 venv/
 env/
+backend/.venv/
+backend/venv/
+backend/app/data/dem/
+backend/app/data/kernels/
+backend/app/data/cache/
+
+# TypeScript incremental build
+frontend/tsconfig.tsbuildinfo
 
 __pycache__/
 .env

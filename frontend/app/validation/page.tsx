@@ -34,7 +34,7 @@ function CaseTable({ c }: { c: HorizonsCase }) {
       <button className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-night-800/50" onClick={() => setOpen(!open)}>
         <Verdict ok={c.passed} label={c.passed ? "pass" : "fail"} />
         <span className="flex-1 text-bone">{c.site_name} · <span className={c.body === "sun" ? "text-sun" : "text-earth"}>{c.body}</span></span>
-        <span className="num text-[11px] text-bone-muted">{c.n_epochs} epochs · max sky error {sci(c.max_sky_error_deg)}°</span>
+        <span className="num text-[11px] text-bone-muted">{c.n_epochs} times checked · largest error {sci(c.max_sky_error_deg)}°</span>
       </button>
       {open && (
         <div className="overflow-x-auto px-4 pb-3">
@@ -68,16 +68,16 @@ function HorizonsPanel({ r }: { r: NonNullable<ValidationReport["horizons"]> }) 
     <section className="panel">
       <div className="panel-head flex-wrap gap-2">
         <div>
-          <h2 className="eyebrow">JPL Horizons vs LUNARIS SPICE</h2>
-          <p className="mt-0.5 text-xs text-bone-muted">Independent airless topocentric check. Recomputed live from the stored Horizons fixture.</p>
+          <h2 className="eyebrow">Sun and Earth positions · NASA JPL Horizons vs LUNARIS</h2>
+          <p className="mt-0.5 text-xs text-bone-muted">We compare where LUNARIS places the Sun and Earth in the sky, as seen from the site, with NASA&apos;s own Horizons service. Recomputed live against a saved copy of the Horizons answers.</p>
         </div>
-        <Verdict ok={r.all_pass} label={r.all_pass ? `all ${r.n_epochs} epochs pass` : "failed"} />
+        <Verdict ok={r.all_pass} label={r.all_pass ? `all ${r.n_epochs} checks pass` : "failed"} />
       </div>
       <div className="grid grid-cols-2 gap-px bg-night-700 sm:grid-cols-4">
-        <Metric label="Max sky error" value={sci(r.max_sky_error_deg) + "°"} sub={`tolerance ${r.tolerance_deg}°`} />
-        <Metric label="RMS sky error" value={sci(r.rms_sky_error_deg) + "°"} sub={`RMS Δel ${sci(r.rms_delta_el_deg)}°`} />
-        <Metric label="Vs solar disk" value={`${(r.max_sky_error_deg / 0.53 * 1e6).toFixed(0)} ppm`} sub="of the Sun's apparent diameter" />
-        <Metric label="Cases" value={`${r.n_cases}`} sub={`fixture ${r.retrieved_utc.slice(0, 10)}`} />
+        <Metric label="Largest error" value={sci(r.max_sky_error_deg) + "°"} sub={`allowed: up to ${r.tolerance_deg}°`} />
+        <Metric label="Typical error (RMS)" value={sci(r.rms_sky_error_deg) + "°"} sub={`height above horizon only: ${sci(r.rms_delta_el_deg)}°`} />
+        <Metric label="Compared with the Sun" value={`${(r.max_sky_error_deg / 0.53 * 1e6).toFixed(0)} ppm`} sub="parts per million of the Sun's width in the sky" />
+        <Metric label="Comparisons" value={`${r.n_cases}`} sub={`NASA answers saved ${r.retrieved_utc.slice(0, 10)}`} />
       </div>
       <div className="divide-y-0">{r.cases.map((c, i) => <CaseTable key={i} c={c} />)}</div>
       <div className="space-y-1 border-t border-night-700 px-4 py-3 text-[11px] text-bone-faint">
@@ -94,19 +94,19 @@ function TerrainPanel({ t }: { t: NonNullable<ValidationReport["terrain"]> }) {
       <div className="panel-head">
         <div>
           <h2 className="eyebrow">Terrain data confidence · {t.site_id}</h2>
-          <p className="mt-0.5 text-xs text-bone-muted">From the NASA LOLA product layers themselves, not invented by LUNARIS.</p>
+          <p className="mt-0.5 text-xs text-bone-muted">These quality figures come from NASA&apos;s own LOLA terrain files, not from LUNARIS.</p>
         </div>
         <span className="num text-[11px] text-bone-faint">{t.shape_px[1]}×{t.shape_px[0]} px · {t.pixel_size_m} m</span>
       </div>
       <div className="grid grid-cols-2 gap-px bg-night-700 sm:grid-cols-4">
-        <Metric label="LOLA returns" value={t.lola_return_fraction == null ? "—" : pct(t.lola_return_fraction)}
-          sub="pixels with a real measurement" />
-        <Metric label="Height σ mean" value={t.height_uncertainty?.mean == null ? "—" : `${t.height_uncertainty.mean.toFixed(2)} m`}
-          sub={t.height_uncertainty?.p95 == null ? undefined : `p95 ${t.height_uncertainty.p95.toFixed(2)} m`} />
-        <Metric label="Slope σ mean" value={t.slope_uncertainty?.mean == null ? "—" : deg(t.slope_uncertainty.mean, 2)}
-          sub={t.slope_uncertainty?.p95 == null ? undefined : `p95 ${t.slope_uncertainty.p95.toFixed(2)}°`} />
-        <Metric label="Our slope mean" value={t.our_slope.mean == null ? "—" : deg(t.our_slope.mean, 1)}
-          sub={t.our_slope.p95 == null ? undefined : `p95 ${t.our_slope.p95.toFixed(1)}°`} />
+        <Metric label="Measured pixels" value={t.lola_return_fraction == null ? "—" : pct(t.lola_return_fraction)}
+          sub="share of pixels with a real laser measurement" />
+        <Metric label="Avg height uncertainty" value={t.height_uncertainty?.mean == null ? "—" : `${t.height_uncertainty.mean.toFixed(2)} m`}
+          sub={t.height_uncertainty?.p95 == null ? undefined : `95% of pixels below ${t.height_uncertainty.p95.toFixed(2)} m`} />
+        <Metric label="Avg slope uncertainty" value={t.slope_uncertainty?.mean == null ? "—" : deg(t.slope_uncertainty.mean, 2)}
+          sub={t.slope_uncertainty?.p95 == null ? undefined : `95% of pixels below ${t.slope_uncertainty.p95.toFixed(2)}°`} />
+        <Metric label="Avg slope (ours)" value={t.our_slope.mean == null ? "—" : deg(t.our_slope.mean, 1)}
+          sub={t.our_slope.p95 == null ? undefined : `95% of pixels below ${t.our_slope.p95.toFixed(1)}°`} />
       </div>
       <div className="space-y-1 px-4 py-3 text-[11px] text-bone-faint">{t.notes.map((n) => <p key={n}>{n}</p>)}</div>
     </section>
@@ -126,7 +126,7 @@ export default function ValidationPage() {
         </p>
       </div>
 
-      {loading && <p className="text-sm text-bone-muted">Running the Horizons comparison and reading the DEM confidence layers…</p>}
+      {loading && <p className="text-sm text-bone-muted">Comparing with NASA Horizons and reading the terrain quality data…</p>}
       {error && <p className="panel p-4 text-sm text-haz-high">{error}</p>}
 
       {data && (
@@ -147,12 +147,12 @@ export default function ValidationPage() {
             <div className="p-4 text-sm text-bone-muted">
               {data.nasa_slope ? (
                 <div className="space-y-2">
-                  <p>Compared our Horn 3×3 slope with NASA&apos;s published <span className="num">slp</span> layer over{" "}
+                  <p>Compared the slopes we calculate (Horn 3×3 method) with NASA&apos;s own published slope map over{" "}
                     <span className="num text-bone">{data.nasa_slope.n_compared.toLocaleString()}</span> pixels.</p>
                   <div className="grid grid-cols-3 gap-px overflow-hidden rounded-md bg-night-700">
-                    <Metric label="RMS difference" value={deg(data.nasa_slope.rms_diff_deg, 3)} />
-                    <Metric label="Mean difference" value={deg(data.nasa_slope.mean_diff_deg, 3)} />
-                    <Metric label="p95 |diff|" value={deg(data.nasa_slope.p95_abs_diff_deg, 3)} />
+                    <Metric label="Typical difference (RMS)" value={deg(data.nasa_slope.rms_diff_deg, 3)} />
+                    <Metric label="Average difference" value={deg(data.nasa_slope.mean_diff_deg, 3)} />
+                    <Metric label="95% of pixels within" value={deg(data.nasa_slope.p95_abs_diff_deg, 3)} />
                   </div>
                   {data.nasa_slope.notes.map((n) => <p key={n} className="text-[11px] text-bone-faint">{n}</p>)}
                 </div>
@@ -164,8 +164,8 @@ export default function ValidationPage() {
           </section>
 
           <section className="panel">
-            <div className="panel-head"><h2 className="eyebrow">Pending independent checks</h2>
-              <span className="text-[11px] text-bone-faint">honest gaps</span></div>
+            <div className="panel-head"><h2 className="eyebrow">Checks we have not done yet</h2>
+              <span className="text-[11px] text-bone-faint">known gaps</span></div>
             <ul className="divide-y divide-night-800">
               {data.pending.map((p) => (
                 <li key={p.id} className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-start sm:gap-4">
@@ -181,7 +181,7 @@ export default function ValidationPage() {
           </section>
 
           <section className="panel">
-            <div className="panel-head"><h2 className="eyebrow">Method limits we always report</h2></div>
+            <div className="panel-head"><h2 className="eyebrow">Known limits of our method</h2></div>
             <dl className="divide-y divide-night-800">
               {data.method_limits.map((m) => (
                 <div key={m.id} className="grid gap-1 px-4 py-3 sm:grid-cols-[14rem_1fr]">
