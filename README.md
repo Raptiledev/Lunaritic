@@ -23,6 +23,7 @@ Landing Date Planner: Evaluate alternative landing dates and nearby suitable loc
 Mission Timeline: Visualize Sun and Earth visibility throughout the mission.
 Mission Reports: Generate printable mission summaries.
 Scientific Validation: Compare astronomical calculations with JPL Horizons reference data.
+
 🛰️ Data Sources
 
 LUNARITIC uses scientific datasets and tools from:
