@@ -1,4 +1,4 @@
-🌕 LUNARITIC
+🌕 LUNARIS
 Lunar Navigation, Illumination & Risk Intelligence System
 
 NASA Space Apps Challenge 2026 | Team Alpha 8
@@ -6,7 +6,7 @@ Challenge: Lunar Landing Site Navigator
 
 🚀 About the Project
 
-LUNARITIC is an interactive lunar landing site analysis and mission planning platform designed to help evaluate potential landing locations on the Moon.
+LUNARIS is an interactive lunar landing site analysis and mission planning platform designed to help evaluate potential landing locations on the Moon.
 
 It combines lunar terrain data, sunlight calculations, earth visibility analysis, and mission planning tools to help users understand the environmental conditions and potential risks associated with different lunar landing sites.
 
@@ -26,7 +26,7 @@ Scientific Validation: Compare astronomical calculations with JPL Horizons refer
 
 🛰️ Data Sources
 
-LUNARITIC uses scientific datasets and tools from:
+LUNARIS uses scientific datasets and tools from:
 
 NASA LOLA: Lunar elevation and terrain data.
 NASA/USGS LROC WAC: Lunar surface imagery.
@@ -107,8 +107,8 @@ NASA Space Apps Challenge 2026
 
 📜 Disclaimer
 
-LUNARITIC is an independent educational and research prototype developed for NASA Space Apps Challenge 2026. It is not an official NASA product or a certified operational landing site assessment system.
+LUNARIS is an independent educational and research prototype developed for NASA Space Apps Challenge 2026. It is not an official NASA product or a certified operational landing site assessment system.
 
-🌑 LUNARITIC
+🌑 LUNARIS
 
 Explore the Moon. Understand the Terrain. Plan with Confidence.
