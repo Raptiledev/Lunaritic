@@ -43,7 +43,7 @@ function TargetPanel() {
   return (
     <section className="panel flex flex-col" aria-labelledby="target-h" aria-busy={fetching || drawing}>
       <div className="panel-head">
-        <h2 id="target-h" className="eyebrow">Your target on the terrain map</h2>
+        <h2 id="target-h" className="eyebrow">Target on LOLA terrain</h2>
         <Link href="/explorer" className="text-[11px] text-bone-muted hover:text-bone">Open Explorer →</Link>
       </div>
       <div className="flex flex-1 items-center justify-center p-4">
@@ -53,11 +53,11 @@ function TargetPanel() {
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={layerUrl(site.site_id, "hillshade", 600)}
-                alt={`Shaded terrain map of ${site.site_id}`}
+                alt={`Hillshade of ${site.site_id}`}
                 className={`h-full w-full object-cover transition-opacity ${layerReady ? "opacity-90" : "opacity-0"}`}
                 ref={(el) => { if (el?.complete && el.naturalWidth > 0) setLayerReady(true); }}
                 onLoad={() => setLayerReady(true)}
-                onError={() => setLayerError("The terrain map did not load.")}
+                onError={() => setLayerError("The hillshade layer did not load.")}
               />
             )}
             {layerReady && (
@@ -75,18 +75,18 @@ function TargetPanel() {
                 )}
               </>
             )}
-            {fetching && <DemLoader title="Loading the terrain data" detail="The Site01 terrain is downloading from NASA. The map appears when it is ready." />}
-            {drawing && <DemLoader title="Drawing the terrain map" detail="The shaded map is built from NASA's 5 m terrain data." />}
+            {fetching && <DemLoader title="Fetching the LOLA DEM" detail="Site01 is downloading from NASA PGDA. The terrain stays hidden until the hillshade is on screen." />}
+            {drawing && <DemLoader title="Drawing the terrain layer" detail="Hillshade is computed from the 5 m LOLA surface." />}
             {!fetching && !site && !t.error && (
-              <p className="absolute inset-0 grid place-items-center px-6 text-center text-sm text-bone-muted">No terrain data loaded. LUNARIS shows real NASA terrain or nothing, never a placeholder map.</p>
+              <p className="absolute inset-0 grid place-items-center px-6 text-center text-sm text-bone-muted">No DEM loaded. LUNARIS shows real LOLA terrain or nothing, never a stand-in map.</p>
             )}
             {(t.error || layerError) && !fetching && (
               <p className="absolute inset-0 grid place-items-center px-6 text-center text-sm text-haz-high">{layerError ?? t.error}</p>
             )}
           </div>
           <p className="mt-3 text-center text-xs text-bone-muted">
-            {fetching || drawing ? "Waiting for the terrain map…"
-              : t.site ? <>Your target is inside <span className="text-bone">{t.site.site_id}</span>, which is covered by 5 m terrain data.</>
+            {fetching || drawing ? "Waiting for the LOLA layer…"
+              : t.site ? <>Target lies inside <span className="text-bone">{t.site.site_id}</span>, 5 m/px LOLA tile.</>
               : t.hasTarget ? outsideMessage(t.sites, t.lat, t.lon)
               : "No target set yet. Pick a point in the Explorer or type a latitude and longitude."}
           </p>
@@ -112,12 +112,12 @@ function TerrainSafety() {
   const bars: [string, string][] = [["Favorable", "bg-haz-ok"], ["Caution", "bg-haz-caution"], ["High risk", "bg-haz-high"], ["Insufficient data", "bg-haz-none"]];
   return (
     <div>
-      <p className="num text-lg">{(f["Favorable"] * 100).toFixed(0)}<span className="text-xs text-bone-muted">% favorable ground within 100 m</span></p>
+      <p className="num text-lg">{(f["Favorable"] * 100).toFixed(0)}<span className="text-xs text-bone-muted">% favorable within 100 m</span></p>
       <div className="mt-2 flex h-1.5 overflow-hidden rounded-full bg-night-800">
         {bars.map(([k, c]) => <span key={k} className={c} style={{ width: `${(f[k] ?? 0) * 100}%` }} title={`${k} ${((f[k] ?? 0) * 100).toFixed(0)}%`} />)}
       </div>
-      <p className="num mt-2 text-[11px] text-bone-muted">95% of slopes below {s.slope_p95_deg?.toFixed(1)}° · average roughness {s.roughness_mean_m?.toFixed(2)} m</p>
-      <p className="mt-1 text-[11px] text-bone-faint">Example thresholds, not NASA requirements.</p>
+      <p className="num mt-2 text-[11px] text-bone-muted">slope p95 {s.slope_p95_deg?.toFixed(1)}° · roughness {s.roughness_mean_m?.toFixed(2)} m</p>
+      <p className="mt-1 text-[11px] text-bone-faint">Illustrative thresholds, not NASA requirements.</p>
     </div>
   );
 }
@@ -130,9 +130,9 @@ function VisibilityValue({ body }: { body: "sun" | "earth" }) {
   const b = a.result[body];
   return (
     <div>
-      <p className="num text-lg">{a.result.upper_bound && b.fraction_of_time > 0 ? "≤ " : ""}{(b.fraction_of_time * 100).toFixed(0)}<span className="text-xs text-bone-muted">% of the mission window</span></p>
+      <p className="num text-lg">{a.result.upper_bound ? "≤ " : ""}{(b.fraction_of_time * 100).toFixed(0)}<span className="text-xs text-bone-muted">% of the window</span></p>
       <p className="num mt-2 text-[11px] text-bone-muted">longest {body === "sun" ? "darkness" : "without Earth"} {fmtDuration(b.longest_hidden_hours)}</p>
-      <Link href="/analysis" className="link mt-1 inline-block text-[11px]">See details</Link>
+      <Link href="/analysis" className="link mt-1 inline-block text-[11px]">Details</Link>
     </div>
   );
 }
@@ -168,9 +168,9 @@ function OverallValue() {
     <div>
       <p className="num text-lg">{scorePct(c.overall)}<span className="text-xs text-bone-muted"> / 100</span></p>
       <p className={`mt-2 text-[11px] ${c.eligible ? "text-haz-ok" : "text-haz-high"}`}>
-        {c.eligible ? "Meets every must-have requirement" : `Fails ${c.failed_gates.join(", ")}`}
+        {c.eligible ? "Meets every hard requirement" : `Fails ${c.failed_gates.join(", ")}`}
       </p>
-      <Link href="/comparison" className="link mt-1 inline-block text-[11px]">Compare and adjust weights</Link>
+      <Link href="/comparison" className="link mt-1 inline-block text-[11px]">Compare & weights</Link>
     </div>
   );
 }
@@ -195,13 +195,12 @@ export default function Dashboard() {
             <span className="text-bone-faint">·</span>
             <p className="eyebrow !normal-case tracking-normal text-bone-muted">Mission console</p>
           </div>
+          <h1 className="mt-3 font-display text-2xl font-semibold tracking-tightish sm:text-3xl">
+            Where the Sun skims the horizon, metres decide everything.
+          </h1>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-bone-muted">
-            Choose a landing point and a mission window. LUNARIS shows how much sunlight the site gets, when Earth is in view for direct radio contact,
-            and how safe the ground is, using real NASA terrain and Sun and Earth position data. Every number can be traced back to how it was calculated.
-          </p>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-bone-muted">
-            <span className="text-bone">Why the south pole is hard:</span> the Sun never climbs more than about two degrees above the horizon there, and Earth stays low too.
-            A single ridge can decide whether a lander has power and radio contact, so moving a few hundred metres or a few days can change the answer.
+            Define a candidate landing point and window. LUNARIS evaluates sunlight, direct-to-Earth visibility and terrain safety from real
+            NASA LOLA terrain and JPL ephemerides — and shows how every number was reached.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <Link href="/explorer" className="chip hover:border-bone-faint hover:text-bone">Explorer</Link>
@@ -214,7 +213,7 @@ export default function Dashboard() {
 
       <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
         <section className="panel" aria-labelledby="mission-h">
-          <div className="panel-head"><h2 id="mission-h" className="eyebrow">Set up your mission</h2>
+          <div className="panel-head"><h2 id="mission-h" className="eyebrow">Mission configuration</h2>
             <span className="text-[11px] text-bone-faint">Saved in this browser</span></div>
           <div className="p-4">
             <MissionForm value={mission} onChange={setMission} />
@@ -222,7 +221,7 @@ export default function Dashboard() {
               <button disabled={!ready || a.loading} className="btn btn-primary"
                 onClick={async () => { if (await a.run()) router.push("/analysis"); }}>{a.loading ? "Computing…" : "Run analysis"}</button>
               <span className="text-[11px] text-bone-faint">
-                {a.error ? <span className="text-haz-high">{a.error}</span> : ready ? `Ready: ${a.site?.site_id}, viewing from ${a.observerHeight} m above the ground.` : a.problems[0]}
+                {a.error ? <span className="text-haz-high">{a.error}</span> : ready ? `Ready: ${a.site?.site_id}, observer ${a.observerHeight} m above the terrain.` : a.problems[0]}
               </span>
             </div>
           </div>
@@ -231,18 +230,18 @@ export default function Dashboard() {
       </div>
 
       <section aria-labelledby="ind-h">
-        <h2 id="ind-h" className="eyebrow mb-3">How suitable is this site?</h2>
+        <h2 id="ind-h" className="eyebrow mb-3">Suitability indicators</h2>
         <div className="stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Indicator tone="sun" title="Sunlight" question="How often can the site see the Sun over the surrounding terrain?" source="Run analysis">
+          <Indicator tone="sun" title="Sunlight" question="Is the Sun's disk above the local terrain horizon?" source="Run analysis">
             <VisibilityValue body="sun" />
           </Indicator>
-          <Indicator tone="earth" title="Direct-to-Earth" question="How often is Earth in view for direct radio contact?" source="Run analysis">
+          <Indicator tone="earth" title="Direct-to-Earth" question="Is Earth geometrically above the terrain horizon?" source="Run analysis">
             <VisibilityValue body="earth" />
           </Indicator>
-          <Indicator tone="terrain" title="Terrain safety" question="How steep and rough is the ground around the target?" source="a target inside the loaded terrain area">
+          <Indicator tone="terrain" title="Terrain safety" question="Slope and roughness around the target" source="a target inside a loaded LOLA tile">
             <TerrainSafetyOrPlaceholder />
           </Indicator>
-          <Indicator tone="overall" title="Overall" question="All factors combined, using your weights" source="Compare">
+          <Indicator tone="overall" title="Overall" question="How the factors combine under your weights" source="Compare">
             <OverallValue />
           </Indicator>
         </div>
@@ -253,7 +252,7 @@ export default function Dashboard() {
           <h2 id="data-h" className="eyebrow">Data sources</h2>
           {ds && <span className="num text-[11px] text-bone-muted">{ds.acquired_count}/{ds.total_count} acquired</span>}
         </div>
-        {error && <p className="p-4 text-sm text-haz-high">Could not load the dataset list ({error}). Check that the server is running.</p>}
+        {error && <p className="p-4 text-sm text-haz-high">Could not load the dataset registry ({error}). Check that the backend is running.</p>}
         {!ds && !error && <p className="p-4 text-sm text-bone-muted">Loading…</p>}
         {ds && (
           <ul className="grid divide-night-800 sm:grid-cols-2">
@@ -276,6 +275,6 @@ export default function Dashboard() {
 
 function TerrainSafetyOrPlaceholder() {
   const t = useTargetSite();
-  if (!t.site) return <><p className="num text-lg text-bone-faint">Not computed</p><p className="mt-1 text-[11px] text-bone-faint">Set a target inside the loaded terrain area.</p></>;
+  if (!t.site) return <><p className="num text-lg text-bone-faint">Not computed</p><p className="mt-1 text-[11px] text-bone-faint">Set a target inside a loaded LOLA tile.</p></>;
   return <TerrainSafety />;
 }

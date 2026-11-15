@@ -51,42 +51,33 @@ function Results({ r }: { r: VisibilityResponse }) {
   const sunNext = nextEvent(r.sun), earthNext = nextEvent(r.earth);
   const hs = r.sun.hours_to_next_event, he = r.earth.hours_to_next_event;
   const first = hs == null && he == null ? { label: "none in window", value: "—" } : he == null || (hs != null && hs <= he) ? sunNext : earthNext;
-  const bound = (v: number) => (r.upper_bound && v > 0 ? "≤ " : "");
-  const other = hs == null && he == null ? null : first === sunNext ? { ...earthNext, tone: "text-earth" } : { ...sunNext, tone: "text-sun" };
-  const upTo = r.upper_bound ? "at most " : "";
-  const sunLine = r.sun.fraction_of_time === 0 ? "No sunlight at any point in this window."
-    : `Sunlight for ${upTo}${pct(r.sun.fraction_of_time)} of this window, with a longest dark stretch of ${fmtDuration(r.sun.longest_hidden_hours)}.`;
-  const earthLine = r.earth.fraction_of_time === 0 ? "Earth is never in view."
-    : `Earth is in view for ${upTo}${pct(r.earth.fraction_of_time)} of it, with a longest gap of ${fmtDuration(r.earth.longest_hidden_hours)}.`;
+  const bound = r.upper_bound ? "≤ " : "";
   return (
     <div className="space-y-5">
-      <p className="panel p-4 text-sm text-bone">{sunLine} {earthLine}</p>
-
       {r.upper_bound && (
         <div className="flex gap-3 rounded-lg border border-night-600 bg-night-900 p-3 text-xs text-bone-muted">
           <AlertTriangle size={16} className="mt-0.5 shrink-0 text-bone" aria-hidden />
-          <p><span className="text-bone">These are best-case figures.</span> In {pct(r.horizon_incomplete_fraction)} of directions our terrain data stops at the edge of the 16 km
-            area we check. Mountains further away could block more sky, so real sunlight and Earth time can be lower, never higher.</p>
+          <p><span className="text-bone">These are upper bounds.</span> {pct(r.horizon_incomplete_fraction)} of horizon rays reach the edge of the 16 km
+            terrain tile. Mountains beyond it are unknown and can only hide more sky, so real sunlight and Earth time can be lower, never higher.</p>
         </div>
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Metric tone="sun" label="Sunlight" value={bound(r.sun.fraction_of_time) + pct(r.sun.fraction_of_time)}
+        <Metric tone="sun" label="Sunlight" value={bound + pct(r.sun.fraction_of_time)}
           sub={<>of the window with some of the Sun visible. Average share of the disk visible: <span className="num text-bone">{pct(r.sun.mean_disk_fraction)}</span></>} />
         <Metric tone="sun" label="Longest darkness" value={fmtDuration(r.sun.longest_hidden_hours)}
           sub={<>{r.sun.longest_hidden_is_open ? "Continues past the window edge, so it may be longer. " : ""}The stretch a battery must survive.</>} />
-        <Metric tone="earth" label="Earth in view" value={bound(r.earth.fraction_of_time) + pct(r.earth.fraction_of_time)}
+        <Metric tone="earth" label="Earth in view" value={bound + pct(r.earth.fraction_of_time)}
           sub={<>of the window with Earth's centre above the terrain. Longest without Earth: <span className="num text-bone">{fmtDuration(r.earth.longest_hidden_hours)}</span></>} />
         <Metric tone="bone" label={`Next event · ${first.label}`} value={first.value}
-          sub={<>Counted from touchdown, when the Sun is {r.sun.visible_at_start ? "up" : "hidden"} and Earth is {r.earth.visible_at_start ? "in view" : "hidden"}.
-            {other && <><br /><span className={other.tone}>{other.label}</span>{other.value !== "—" && <> <span className="num text-bone">{other.value}</span></>}</>}</>} />
+          sub={<>At touchdown the Sun is {r.sun.visible_at_start ? "up" : "hidden"} and Earth is {r.earth.visible_at_start ? "in view" : "hidden"}.
+            <br /><span className="text-sun">{sunNext.label}</span> <span className="num text-bone">{sunNext.value}</span> · <span className="text-earth">{earthNext.label}</span> <span className="num text-bone">{earthNext.value}</span></>} />
       </div>
 
       <section className="panel">
         <div className="panel-head"><span className="eyebrow">Visibility timeline</span>
           <span className="num text-[11px] text-bone-faint">{r.n_samples} steps of {r.step_minutes} min · both visible {pct(r.both_fraction_of_time)} · neither {pct(r.neither_fraction_of_time)}</span></div>
-        <div className="p-4"><VisibilityStrip r={r} />
-          {r.sun.periods.length === 0 && <p className="mt-2 text-[11px] text-bone-faint">The Sun row is empty because the Sun never clears the terrain in this window.</p>}</div>
+        <div className="p-4"><VisibilityStrip r={r} /></div>
       </section>
 
       <div className="grid gap-5 lg:grid-cols-2">
@@ -96,9 +87,8 @@ function Results({ r }: { r: VisibilityResponse }) {
               <span className="num text-[11px] text-bone-faint">max {r[b].elevation_max_deg.toFixed(2)}°</span></div>
             <div className="p-3">
               <ElevationChart r={r} body={b} />
-              <p className="mt-1 text-[11px] ">Visible while the {b === "sun" ? "amber" : "blue"} line is above the grey terrain.
-                The grey changes because the {b === "sun" ? "Sun" : "Earth"} moves across the sky and the terrain differs in each direction.</p>
-              {r[b].periods.length === 0 && r[b].elevation_max_deg > 0 && <p className="mt-1 text-[11px] text-bone-muted">The {b === "sun" ? "Sun" : "Earth"} rises above a flat horizon here (max {r[b].elevation_max_deg.toFixed(2)}°) but stays behind the terrain for the whole window.</p>}
+              <p className="mt-1 text-[11px] text-bone-faint">Visible while the {b === "sun" ? "amber" : "blue"} line is above the grey terrain.
+                The grey changes because the {b === "sun" ? "Sun" : "Earth"} moves to different azimuths with different terrain.</p>
             </div>
           </section>
         ))}
@@ -127,9 +117,10 @@ export default function AnalysisPage() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-3xl">
+          <p className="eyebrow">Landing site analysis</p>
           <h1 className="mt-2 font-display text-2xl font-semibold tracking-tightish">{m.name || "Unnamed mission"}: sunlight and Earth over the window</h1>
           <p className="mt-2 text-sm text-bone-muted">
-            At every time, the step we compare where the Sun and Earth really are (NASA JPL data) with the terrain around the site (NASA LOLA elevation data).
+            Every time step compares the real Sun and Earth position (NASA JPL SPICE) with the terrain horizon from LOLA in that direction.
           </p>
         </div>
         <div className="flex items-center gap-3">

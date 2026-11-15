@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { api, API_URL } from "@/services/api";
 import { useApi } from "@/hooks/useApi";
-import { CompareListProvider } from "@/context/compareList";
 import { MissionProvider } from "@/context/mission";
 import { AnalysisProvider } from "@/context/analysis";
 import MissionStrip from "./MissionStrip";
@@ -67,7 +66,6 @@ export default function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <MissionProvider>
-      <CompareListProvider>
       <AnalysisProvider>
         <div className="flex min-h-screen flex-col">
           <header className="sticky top-0 z-20 border-b border-night-700/80 bg-night-950/80 backdrop-blur-xl">
@@ -135,7 +133,6 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           </footer>
         </div>
       </AnalysisProvider>
-      </CompareListProvider>
     </MissionProvider>
   );
 }

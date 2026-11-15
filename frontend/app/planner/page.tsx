@@ -93,8 +93,8 @@ export default function SlipPlanner() {
         <p className="eyebrow">Slip Planner · what if the landing date moves?</p>
         <h1 className="mt-2 font-display text-2xl font-semibold tracking-tightish">Which landing dates still work, and where else could we go?</h1>
         <p className="mt-2 text-sm leading-relaxed text-bone-muted">
-          Each day below is a possible landing date: a full mission of <span className="num text-bone">{mission.durationDays || "?"}</span> days starting that day,
-          checked at your target against real terrain and NASA data on where the Sun and Earth are. Colours show whether it meets your requirements.
+          Every day below is a full mission of <span className="num text-bone">{mission.durationDays || "?"}</span> days starting that day,
+          analysed at your target with real terrain and NASA SPICE. Colours show whether it meets your requirements.
         </p>
       </div>
 
@@ -109,20 +109,20 @@ export default function SlipPlanner() {
       <section className="grid gap-4 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-semibold">Mission requirements</h2>
+            <h2 className="eyebrow">Mission requirements</h2>
             <button className="text-[11px] text-bone-muted hover:text-bone" onClick={reset}>Reset</button>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Sunlight at least" unit="% of window" value={req.minSunPct} onChange={(v) => setReq({ minSunPct: v })} hint="Power for solar panels." />
             <Field label="Darkness at most" unit="hours" value={req.maxDarkH} onChange={(v) => setReq({ maxDarkH: v })} hint="What the battery can survive." />
             <Field label="Earth at least" unit="% of window" value={req.minEarthPct} onChange={(v) => setReq({ minEarthPct: v })} hint="Direct radio contact." />
-            <Field label="Favorable ground" unit="% of each 100 m square" value={req.minFavorablePct} onChange={(v) => setReq({ minFavorablePct: v })} hint="Only used when searching for other spots." />
+            <Field label="Favorable ground" unit="% of 100 m cell" value={req.minFavorablePct} onChange={(v) => setReq({ minFavorablePct: v })} hint="Used when searching other spots." />
           </div>
-          <p className="mt-4 text-[11px] text-bone-faint">These starting values are examples only, not official NASA requirements. Change them to your lander's real limits.</p>
+          <p className="mt-4 text-[11px] text-bone-faint">Default values are illustrative examples, not NASA requirements. Set them to your lander's real limits.</p>
         </div>
 
         <div className="panel p-4">
-          <h2 className="font-semibold mb-3">Verdict for the planned date</h2>
+          <h2 className="eyebrow mb-3">Verdict for the planned date</h2>
           {loading && <p className="text-sm text-bone-muted">Analysing {N_DAYS} possible landing dates…</p>}
           {error && <p className="text-sm text-haz-high">{error}</p>}
           {cal && !loading && (() => {
@@ -134,9 +134,9 @@ export default function SlipPlanner() {
                   <span className="text-lg">{dayLabel(cal.days[planned].start_utc)}: {f.length ? <>fails <span className="text-bone">{f.map((c) => CHECK_LABEL[c].toLowerCase()).join(" and ")}</span></> : "meets every requirement"}</span>
                 </div>
                 <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-md bg-night-700 text-center">
-                  <div className="bg-night-900 p-3"><dt className="eyebrow">Room for delay</dt>
+                  <div className="bg-night-900 p-3"><dt className="eyebrow">Slip tolerance</dt>
                     <dd className="num mt-1 text-2xl">{tol == null ? "0 d" : `${tol} d`}</dd>
-                    <dd className="text-[11px] text-bone-muted">{tol == null ? "planned date already fails" : "the landing can be this late and still pass"}</dd></div>
+                    <dd className="text-[11px] text-bone-muted">{tol == null ? "planned date already fails" : "of delay still meets everything"}</dd></div>
                   <div className="bg-night-900 p-3"><dt className="eyebrow">Next good date</dt>
                     <dd className="num mt-1 text-2xl">{nextGo < 0 ? "—" : nextGo === planned ? "planned" : `+${nextGo - planned} d`}</dd>
                     <dd className="text-[11px] text-bone-muted">{nextGo < 0 ? `none in the next ${N_DAYS - planned} days` : dayLabel(cal.days[nextGo].start_utc)}</dd></div>
@@ -154,7 +154,7 @@ export default function SlipPlanner() {
       {cal && (
         <section className="panel">
           <div className="panel-head"><span className="eyebrow">Landing calendar · click a day</span>
-            <span className="num text-[11px] text-bone-faint">{N_DAYS} landing dates · {cal.n_samples} checks, {cal.step_minutes} min apart · same time of day as planned</span></div>
+            <span className="num text-[11px] text-bone-faint">{N_DAYS} landing dates · {cal.n_samples} time steps of {cal.step_minutes} min · same time of day as planned</span></div>
           <div className="grid gap-6 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <LandingCalendar days={cal.days} req={req} planned={planned} selected={selected} onSelect={setSelected} />
             <TrendChart days={cal.days} req={req} planned={planned} selected={selected} />
@@ -172,7 +172,7 @@ export default function SlipPlanner() {
             <div className="flex gap-2">
               {selected !== planned && <button className="btn" onClick={() => applyDate(selected)}>Use this date</button>}
               <button className="btn-primary btn" onClick={findAlternatives} disabled={altLoading}>
-                <Search size={13} aria-hidden />{altLoading ? "Searching every 100 m square…" : "Find nearest spot that works on this date"}
+                <Search size={13} aria-hidden />{altLoading ? "Searching every 100 m cell…" : "Find nearest spot that works on this date"}
               </button>
             </div>
           </div>
@@ -192,10 +192,10 @@ export default function SlipPlanner() {
               })}
             </div>
             <p className="text-[11px] text-bone-faint">At touchdown the Sun is {sel.sunlit_at_landing ? "up" : "hidden"} and Earth is {sel.earth_at_landing ? "in view" : "hidden"}.
-              Sunlight and Earth figures are best-case, so real values can be lower. Darkness is a minimum, so the real stretch can be longer.</p>
+              Sunlight and Earth figures are upper bounds; darkness is a lower bound.</p>
             {altError && <p className="text-sm text-haz-high">{altError}</p>}
             {alts && <Alternatives a={alts} onTarget={setTarget} />}
-            {!alts && !altLoading && <p className="text-xs text-bone-muted">The search checks every 100 m square within 3 km for this date and returns the nearest ones that meet
+            {!alts && !altLoading && <p className="text-xs text-bone-muted">The search checks every 100 m cell within 3 km for this date and returns the nearest ones that meet
               all requirements, including favorable ground. The first search for a new date takes up to about 30 seconds.</p>}
           </div>
         </section>

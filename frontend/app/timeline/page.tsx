@@ -49,7 +49,7 @@ export default function TimelinePage() {
       <div className="space-y-5">
         <Header />
         <div className="panel space-y-2 p-4 text-sm">
-          <p className="text-bone">Run the analysis first. The timeline replays its real Sun, Earth and terrain results.</p>
+          <p className="text-bone">Run analysis first so the timeline has a real Sun / Earth / horizon series.</p>
           <p className="text-bone-muted">Mission: {mission.name || "unnamed"} · {missionStartIso(mission) ?? "no date"}</p>
           <Link href="/dashboard" className="link text-xs">Mission → Run analysis</Link>
         </div>
@@ -78,24 +78,24 @@ export default function TimelinePage() {
             <span className="num text-bone">{speed}×</span>
           </label>
           <span className="num text-sm text-bone">{tLabel}</span>
-          <span className="text-[11px] text-bone-faint">moment {i + 1} of {n} · {r.step_minutes} min apart</span>
+          <span className="text-[11px] text-bone-faint">step {i + 1}/{n} · {r.step_minutes} min</span>
         </div>
         <input className="mt-3 w-full accent-sun" type="range" min={0} max={Math.max(n - 1, 0)} value={i}
           onChange={(e) => { setPlaying(false); setI(Number(e.target.value)); }} />
       </section>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Metric tone="sun" label="Sun height in the sky" value={`${s.sun_elevation_deg[i].toFixed(2)}°`}
-          sub={<>terrain reaches {s.sun_horizon_deg[i].toFixed(2)}° · { (s.sun_visible_fraction[i] * 100).toFixed(0)}% of the Sun visible · {sunUp ? "lit" : "hidden"}</>} />
-        <Metric tone="earth" label="Earth height in the sky" value={`${s.earth_elevation_deg[i].toFixed(2)}°`}
-          sub={<>terrain reaches {s.earth_horizon_deg[i].toFixed(2)}° · {(s.earth_visible_fraction[i] * 100).toFixed(0)}% of Earth visible · {earthUp ? "in view" : "hidden"}</>} />
-        <Metric tone="sun" label="Sun direction" value={`${s.sun_azimuth_deg[i].toFixed(1)}°`} sub="compass bearing, clockwise from lunar north" />
-        <Metric tone="earth" label="Earth direction" value={`${s.earth_azimuth_deg[i].toFixed(1)}°`} sub="compass bearing, clockwise from lunar north" />
+        <Metric tone="sun" label="Sun elevation" value={`${s.sun_elevation_deg[i].toFixed(2)}°`}
+          sub={<>horizon {s.sun_horizon_deg[i].toFixed(2)}° · disk { (s.sun_visible_fraction[i] * 100).toFixed(0)}% · {sunUp ? "lit" : "hidden"}</>} />
+        <Metric tone="earth" label="Earth elevation" value={`${s.earth_elevation_deg[i].toFixed(2)}°`}
+          sub={<>horizon {s.earth_horizon_deg[i].toFixed(2)}° · disk {(s.earth_visible_fraction[i] * 100).toFixed(0)}% · {earthUp ? "in view" : "hidden"}</>} />
+        <Metric tone="sun" label="Sun azimuth" value={`${s.sun_azimuth_deg[i].toFixed(1)}°`} sub="clockwise from lunar north" />
+        <Metric tone="earth" label="Earth azimuth" value={`${s.earth_azimuth_deg[i].toFixed(1)}°`} sub="clockwise from lunar north" />
       </div>
 
       <section className="panel">
         <div className="panel-head">
-          <span className="eyebrow">Height in the sky vs the surrounding terrain</span>
+          <span className="eyebrow">Elevation vs terrain horizon</span>
           <span className="text-[11px] text-bone-faint">line above the grey area = clear of the hills</span>
         </div>
         <div className="grid gap-4 p-4 lg:grid-cols-2">
@@ -110,8 +110,8 @@ export default function TimelinePage() {
           sunUp={sunUp} earthUp={earthUp} />
         <p className="mt-3 text-[11px] text-bone-faint">
           Longest darkness in this window: <span className="num text-bone">{fmtDuration(r.sun.longest_hidden_hours)}</span>
-          {" · "}Longest stretch without Earth: <span className="num text-bone">{fmtDuration(r.earth.longest_hidden_hours)}</span>
-          {r.upper_bound ? " · sunlight and Earth figures are best-case" : ""}
+          {" · "}Earth gaps: <span className="num text-bone">{fmtDuration(r.earth.longest_hidden_hours)}</span>
+          {r.upper_bound ? " · visibility figures are upper bounds" : ""}
         </p>
       </section>
     </div>
@@ -121,10 +121,10 @@ export default function TimelinePage() {
 function Header() {
   return (
     <div className="max-w-3xl">
-      
+      <p className="eyebrow">Timeline · play the mission window</p>
       <h1 className="mt-2 font-display text-2xl font-semibold tracking-tightish">Watch the Sun and Earth skim the terrain</h1>
       <p className="mt-2 text-sm leading-relaxed text-bone-muted">
-        Press play to step through the mission window. Every frame comes from the same results as the Analyze page: real NASA Sun and Earth positions against the real terrain. Nothing is animated for show.
+        Every frame is one time step from the real Analysis series: SPICE positions against the LOLA horizon. Nothing is simulated for show.
       </p>
     </div>
   );
@@ -146,7 +146,7 @@ function Chart({ title, color, data, yKey, hKey, cursor }: {
 }) {
   return (
     <div>
-      <div className="mb-1 text-[11px] text-bone-muted"><span style={{ color }}>{title}</span> height in the sky · grey = terrain in that direction</div>
+      <div className="mb-1 text-[11px] text-bone-muted"><span style={{ color }}>{title}</span> elevation · grey = terrain in that direction</div>
       <div className="h-52">
         <ResponsiveContainer>
           <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -12 }}>
@@ -154,7 +154,7 @@ function Chart({ title, color, data, yKey, hKey, cursor }: {
             <XAxis dataKey="t" tick={tick} interval="preserveStartEnd" minTickGap={40} tickLine={false} axisLine={{ stroke: GRID }} />
             <YAxis tick={tick} tickLine={false} axisLine={false} unit="°" />
             <Tooltip contentStyle={{ background: "#0b0e14", border: "1px solid #232a3a", fontSize: 11 }} />
-            <Area dataKey={hKey} name="Terrain" stroke="none" fill="#3a4150" fillOpacity={0.55} isAnimationActive={false} />
+            <Area dataKey={hKey} name="Horizon" stroke="none" fill="#3a4150" fillOpacity={0.55} isAnimationActive={false} />
             <Line dataKey={yKey} name={title} stroke={color} dot={false} strokeWidth={1.6} isAnimationActive={false} />
             {cursor && <ReferenceLine x={cursor} stroke="#ece7dc" strokeDasharray="3 3" />}
           </ComposedChart>
@@ -183,7 +183,7 @@ function Compass({ sunAz, earthAz, sunEl, earthEl, sunUp, earthUp }: {
       })}
       <circle cx={S.x} cy={S.y} r="3.2" fill={SUN} opacity={sunUp ? 1 : 0.35} />
       <circle cx={E.x} cy={E.y} r="3.2" fill={EARTH} opacity={earthUp ? 1 : 0.35} />
-      <text x="50" y="96" textAnchor="middle" fontSize="3.5" fill="#6c6a64">centre = straight overhead · edge = horizon</text>
+      <text x="50" y="96" textAnchor="middle" fontSize="3.5" fill="#6c6a64">centre = zenith · rim = horizon</text>
     </svg>
   );
 }

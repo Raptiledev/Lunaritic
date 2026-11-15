@@ -43,9 +43,9 @@ export default function ReportPage() {
       <div className="flex flex-wrap items-start justify-between gap-4 print:hidden">
         <div className="max-w-3xl">
           <p className="eyebrow">Mission report · printable</p>
-          <h1 className="mt-2 font-display text-2xl font-semibold tracking-tightish">A one-page summary you can share</h1>
+          <h1 className="mt-2 font-display text-2xl font-semibold tracking-tightish">Export what you can defend</h1>
           <p className="mt-2 text-sm leading-relaxed text-bone-muted">
-            One page covering the current mission: sunlight and Earth visibility, the score and how it was built, and how we checked our numbers. Use your browser&apos;s Print dialog to save it as a PDF.
+            A one-page summary of the current mission, visibility analysis, explainable score and validation status. Use your browser&apos;s Print dialog to save a PDF.
           </p>
         </div>
         <button className="btn btn-primary" onClick={() => window.print()}><Printer size={14} /> Print / Save PDF</button>
@@ -56,7 +56,7 @@ export default function ReportPage() {
           <div className="eyebrow print:text-neutral-500">LUNARIS · Team Alpha 8 · NASA Space Apps Challenge 2026</div>
           <h2 className="mt-1 text-xl font-semibold">{mission.name || "Unnamed mission"}</h2>
           <p className="mt-1 text-sm text-bone-muted print:text-neutral-600">
-            Not an official NASA tool. These figures describe what can be seen from the site: sunlight is not the same as power, and Earth in view is not the same as a working radio link.
+            Not an official NASA tool. Geometry only: sunlight is not power; Earth in view is not a radio link.
           </p>
         </header>
 
@@ -65,7 +65,7 @@ export default function ReportPage() {
           <dl className="num grid gap-y-1 text-sm sm:grid-cols-[10rem_1fr]">
             <dt className="font-sans text-bone-muted print:text-neutral-600">Target</dt>
             <dd>{mission.latitude || "—"}°, {mission.longitude || "—"}°E {mission.siteId ? `· ${mission.siteId}` : ""}</dd>
-            <dt className="font-sans text-bone-muted print:text-neutral-600">Mission window</dt>
+            <dt className="font-sans text-bone-muted print:text-neutral-600">Window</dt>
             <dd>{start ? `${start.replace("T", " ").replace(":00Z", " UTC")}` : "—"} · {mission.durationDays || "?"} days</dd>
             <dt className="font-sans text-bone-muted print:text-neutral-600">Observer height</dt>
             <dd>{a.observerHeight} m above the ground</dd>
@@ -73,15 +73,15 @@ export default function ReportPage() {
         </section>
 
         <section>
-          <h3 className="eyebrow mb-2">Sunlight and Earth over the mission window</h3>
+          <h3 className="eyebrow mb-2">Visibility over the window</h3>
           {!r ? (
             <p className="text-sm text-bone-muted print:text-neutral-600">Not computed. Run analysis on the Mission page first. <Link href="/dashboard" className="link print:hidden">Open Mission →</Link></p>
           ) : (
             <div className="space-y-3">
               <div className="grid gap-3 sm:grid-cols-3">
-                <Stat label="Sunlight" value={`${r.upper_bound && r.sun.fraction_of_time > 0 ? "≤ " : ""}${pct(r.sun.fraction_of_time)}`} note={`longest darkness ${fmtDuration(r.sun.longest_hidden_hours)}`} />
-                <Stat label="Earth in view" value={`${r.upper_bound && r.earth.fraction_of_time > 0 ? "≤ " : ""}${pct(r.earth.fraction_of_time)}`} note={`longest stretch without Earth ${fmtDuration(r.earth.longest_hidden_hours)}`} />
-                <Stat label="Both at once" value={`${r.upper_bound && r.both_fraction_of_time > 0 ? "≤ " : ""}${pct(r.both_fraction_of_time)}`} note={`${r.n_samples} checks, ${r.step_minutes} min apart`} />
+                <Stat label="Sunlight" value={`${r.upper_bound ? "≤ " : ""}${pct(r.sun.fraction_of_time)}`} note={`longest dark ${fmtDuration(r.sun.longest_hidden_hours)}`} />
+                <Stat label="Earth in view" value={`${r.upper_bound ? "≤ " : ""}${pct(r.earth.fraction_of_time)}`} note={`longest gap ${fmtDuration(r.earth.longest_hidden_hours)}`} />
+                <Stat label="Both at once" value={`${r.upper_bound ? "≤ " : ""}${pct(r.both_fraction_of_time)}`} note={`${r.n_samples} steps of ${r.step_minutes} min`} />
               </div>
               {r.notes.map((n) => <p key={n} className="text-[11px] text-bone-faint print:text-neutral-500">{n}</p>)}
             </div>
@@ -89,18 +89,18 @@ export default function ReportPage() {
         </section>
 
         <section>
-          <h3 className="eyebrow mb-2">Score and how it was built</h3>
+          <h3 className="eyebrow mb-2">Explainable score</h3>
           {!score ? (
             <p className="text-sm text-bone-muted print:text-neutral-600">Score appears after a fresh analysis.</p>
           ) : (
             <div className="space-y-2">
               <p className="text-sm">
                 Overall <span className="num text-lg">{scorePct(score.overall)}</span> / 100 ·{" "}
-                {score.eligible ? <span className="text-haz-ok">meets every must-have requirement</span> : <span className="text-haz-high">fails {score.failed_gates.join(", ")}</span>}
+                {score.eligible ? <span className="text-haz-ok">meets every hard requirement</span> : <span className="text-haz-high">fails {score.failed_gates.join(", ")}</span>}
               </p>
               <table className="num w-full text-xs">
                 <thead className="text-left text-bone-faint print:text-neutral-500">
-                  <tr className="[&>th]:py-1 [&>th]:pr-3 [&>th]:font-normal"><th>Factor</th><th>Result</th><th>Score</th><th>Weight</th><th>Points added</th><th>Requirement</th></tr>
+                  <tr className="[&>th]:py-1 [&>th]:pr-3 [&>th]:font-normal"><th>Factor</th><th>Metric</th><th>Score</th><th>Weight</th><th>Contribution</th><th>Gate</th></tr>
                 </thead>
                 <tbody>
                   {(["sunlight", "darkness", "earth", "terrain"] as const).map((k) => (
@@ -113,38 +113,38 @@ export default function ReportPage() {
                       <td>{scorePct(score.scores[k])}</td>
                       <td>{Math.round(normalised[k] * 100)}%</td>
                       <td>{scorePct(score.contributions[k])}</td>
-                      <td>{score.gates[k] ? "met" : "not met"}</td>
+                      <td>{score.gates[k] ? "pass" : "fail"}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               <p className="text-[11px] text-bone-faint print:text-neutral-500">
-                Requirements used: sunlight at least {req.minSunPct}%, darkness at most {req.maxDarkH} h, Earth in view at least {req.minEarthPct}%, favorable ground at least {req.minFavorablePct}%.
-                The default values are examples, not NASA requirements. The overall score summarises what can be seen from the site; it is not a probability of mission success.
+                Requirements used: sunlight ≥ {req.minSunPct}%, darkness ≤ {req.maxDarkH} h, Earth ≥ {req.minEarthPct}%, favorable ≥ {req.minFavorablePct}%.
+                Defaults are illustrative, not NASA requirements. Overall is a weighted geometry summary, not a success probability.
               </p>
             </div>
           )}
         </section>
 
         <section>
-          <h3 className="eyebrow mb-2">How we checked our numbers</h3>
+          <h3 className="eyebrow mb-2">Validation snapshot</h3>
           {!val?.horizons ? (
             <p className="text-sm text-bone-muted print:text-neutral-600">Validation report unavailable.</p>
           ) : (
             <div className="space-y-1 text-sm">
-              <p>Sun and Earth positions vs NASA JPL Horizons: <span className={val.horizons.all_pass ? "text-haz-ok" : "text-haz-high"}>{val.horizons.all_pass ? `all ${val.horizons.n_epochs} checks pass` : "failed"}</span></p>
+              <p>JPL Horizons vs LUNARIS SPICE: <span className="text-haz-ok">{val.horizons.all_pass ? `all ${val.horizons.n_epochs} epochs pass` : "failed"}</span></p>
               <p className="num text-xs text-bone-muted print:text-neutral-600">
-                largest error {val.horizons.max_sky_error_deg.toExponential(2)}° · allowed up to {val.horizons.tolerance_deg}°
+                max sky error {val.horizons.max_sky_error_deg.toExponential(2)}° · tolerance {val.horizons.tolerance_deg}°
               </p>
               {val.terrain && (
                 <p className="text-xs text-bone-muted print:text-neutral-600">
-                  Site01 terrain: {(val.terrain.lola_return_fraction! * 100).toFixed(1)}% of pixels have a real laser measurement ·
-                  average height uncertainty {val.terrain.height_uncertainty?.mean?.toFixed(2)} m ·
-                  average slope uncertainty {val.terrain.slope_uncertainty?.mean?.toFixed(2)}°
+                  Site01 LOLA returns in {(val.terrain.lola_return_fraction! * 100).toFixed(1)}% of pixels ·
+                  height σ mean {val.terrain.height_uncertainty?.mean?.toFixed(2)} m ·
+                  slope σ mean {val.terrain.slope_uncertainty?.mean?.toFixed(2)}°
                 </p>
               )}
               <p className="text-[11px] text-bone-faint print:text-neutral-500">
-                Not yet checked: {val.pending.map((p) => p.name).join("; ")}.
+                Pending: {val.pending.map((p) => p.name).join("; ")}.
               </p>
             </div>
           )}

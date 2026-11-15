@@ -8,8 +8,8 @@ import { useApi } from "@/hooks/useApi";
 import { missionStartIso, useMission } from "@/context/mission";
 import { useAnalysis } from "@/context/analysis";
 
-const Terrain3D = dynamic(() => import("@/components/view3d/Terrain3D"), { ssr: false, loading: () => <p className="text-sm text-bone-muted">Loading the 3D view…</p> });
-const MoonGlobe = dynamic(() => import("@/components/view3d/MoonGlobe"), { ssr: false, loading: () => <p className="text-sm text-bone-muted">Loading the Moon globe…</p> });
+const Terrain3D = dynamic(() => import("@/components/view3d/Terrain3D"), { ssr: false, loading: () => <p className="text-sm text-bone-muted">Loading 3D engine…</p> });
+const MoonGlobe = dynamic(() => import("@/components/view3d/MoonGlobe"), { ssr: false, loading: () => <p className="text-sm text-bone-muted">Loading Moon globe…</p> });
 
 type Mode = "globe" | "site";
 
@@ -39,25 +39,25 @@ export default function View3DPage() {
   return (
     <div className="space-y-5">
       <div className="max-w-3xl">
+        <p className="eyebrow">3D terrain · full Moon + Site01 AOI</p>
         <h1 className="mt-2 font-display text-2xl font-semibold tracking-tightish">See the Moon, then the ridge</h1>
         <p className="mt-2 text-sm leading-relaxed text-bone-muted">
-          Whole Moon shows the entire Moon using NASA&apos;s real photo map, so you can see where the landing area sits near the south pole.
-          Switch to Site01 close-up for that area in detail, built from NASA&apos;s 5 m terrain data.
+          Full Moon mode uses the real NASA/USGS LROC WAC photo map (plus LOLA LDEM_16 bump). Metre-scale Site01 LOLA stays in the southern AOI patch. Switch to Site tile for the flat high-detail science mesh.
         </p>
       </div>
 
-      <div className="seg" role="tablist" aria-label="3D view">
-        <button type="button" role="tab" aria-selected={mode === "globe"} className="seg-item" onClick={() => setMode("globe")}>Whole Moon</button>
-        <button type="button" role="tab" aria-selected={mode === "site"} className="seg-item" onClick={() => setMode("site")}>Site01 close-up</button>
+      <div className="seg" role="tablist" aria-label="3D mode">
+        <button type="button" role="tab" aria-selected={mode === "globe"} className="seg-item" onClick={() => setMode("globe")}>Full Moon</button>
+        <button type="button" role="tab" aria-selected={mode === "site"} className="seg-item" onClick={() => setMode("site")}>Site01 tile</button>
       </div>
 
       {loading && (
         <div className="panel relative min-h-[28rem] overflow-hidden" aria-busy="true">
-          <DemLoader title="Loading the terrain data" detail="The Site01 terrain is downloading from NASA. The 3D view opens when it is ready." />
+          <DemLoader title="Fetching the LOLA DEM" detail="Site01 is downloading from NASA PGDA. The 3D view opens when that grid is ready." />
         </div>
       )}
       {error && <p className="panel p-4 text-sm text-haz-high">{error}</p>}
-      {!loading && !site && <p className="panel p-4 text-sm text-bone-muted">No terrain data loaded. Put the Site01 GeoTIFF files in <span className="num">backend/app/data/dem/</span>.</p>}
+      {!loading && !site && <p className="panel p-4 text-sm text-bone-muted">No DEM loaded. Put Site01 GeoTIFFs in <span className="num">backend/app/data/dem/</span>.</p>}
       {site && mode === "globe" && (
         <MoonGlobe site={site} target={hasTarget ? { lat, lon } : null} />
       )}
@@ -67,8 +67,8 @@ export default function View3DPage() {
       {site && (
         <p className="text-[11px] text-bone-faint">
           {mode === "site" && (sun
-            ? <>Sun at mission start: direction <span className="num text-sun">{sun.az.toFixed(1)}°</span>, height <span className="num text-sun">{sun.el.toFixed(2)}°</span> above the horizon. </>
-            : <>Set a mission target and date to light this view from the real Sun position. </>)}
+            ? <>Sun at mission start: az <span className="num text-sun">{sun.az.toFixed(1)}°</span>, el <span className="num text-sun">{sun.el.toFixed(2)}°</span>. </>
+            : <>Set a mission target and date to light the site tile from the real Sun. </>)}
           <Link href="/explorer" className="link">2D Explorer</Link>
           {" · "}
           <Link href="/dashboard" className="link">Edit mission</Link>

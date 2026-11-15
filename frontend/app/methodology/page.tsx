@@ -75,10 +75,6 @@ export default function Methodology() {
       <div>
         <p className="eyebrow">Data and methodology</p>
         <h1 className="mt-2 font-display text-2xl font-semibold tracking-tightish">What LUNARIS uses, and what it can claim</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-bone-muted">
-          This is the technical reference: where the data comes from, how each number is calculated, and what LUNARIS does not claim.
-          The other pages explain results in plain words; this one is for readers who want to check the details.
-        </p>
       </div>
       <section className="grid gap-4 md:grid-cols-2">
         <div className="panel p-4">
@@ -106,7 +102,7 @@ export default function Methodology() {
       <section>
         <h2 className="eyebrow mb-3">Datasets</h2>
         {loading && <p className="text-sm text-bone-muted">Loading…</p>}
-        {error && <p className="text-sm text-haz-high">Could not load the dataset list ({error}). Check that the server is running.</p>}
+        {error && <p className="text-sm text-haz-high">Could not load the dataset registry ({error}). Check that the backend is running.</p>}
         <div className="space-y-3">{data?.datasets.map((d) => <DatasetCard key={d.id} d={d} />)}</div>
       </section>
     </div>

@@ -374,7 +374,11 @@ export default function MoonGlobe({ site, target }: {
       </div>
       {mesh && (
         <div className="space-y-1 text-[11px] text-bone-faint">
-       
+          <p>
+            Full Moon imagery is the public LRO WAC mosaic from NASA Trek (loaded by URL, not from a file in this repo).
+            The amber patch is the Site01 5 m LOLA DEM in true metres ({mesh.nx}×{mesh.ny} · ~{mesh.spacing_m.toFixed(0)} m), stood on the local vertical so the ridge does not shear at the pole.
+          </p>
+          <p>Drag to orbit · scroll to zoom. Focus Site01 AOI frames the ridge in true metres and hides the globe mesh, which is too coarse at this range. Amber outline = tile edge.</p>
         </div>
       )}
     </div>
