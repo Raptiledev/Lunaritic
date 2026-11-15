@@ -5,8 +5,11 @@ frontend/node_modules/
 node_modules/
 .next/
 
-# Whole backend stays local for now. Do not push.
-backend/
+# Backend temporary cache
+backend/app/data/cache/
+backend/app/data/dem/
+backend/app/data/kernels/
+!backend/app/data/*/.gitkeep
 
 # Backend virtual environments
 backend/.venv/
