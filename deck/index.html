@@ -35,11 +35,11 @@
           <p class="eyebrow">Team Alpha 8 · Lunar Landing Site Navigator</p>
           <h1 class="display">LUNARIS</h1>
           <p class="lede">Lunar Navigation, Illumination, and Risk Intelligence.</p>
-          <p class="quiet">Where the Sun skims the horizon, metres decide everything.</p>
+          <p class="quiet">Where the Sun skims the horizon, a few metres decide everything.</p>
           <dl class="facts">
-            <div><dt>Site01</dt><dd>LOLA 5 m tile</dd></div>
-            <div><dt>SPICE</dt><dd>Sun and Earth</dd></div>
-            <div><dt>Horizons</dt><dd>108-epoch check</dd></div>
+            <div><dt>5 m terrain</dt><dd>NASA LOLA, Site01</dd></div>
+            <div><dt>Real positions</dt><dd>Sun and Earth, NASA JPL</dd></div>
+            <div><dt>Checked</dt><dd>108 times against NASA Horizons</dd></div>
           </dl>
         </div>
         <div class="moon" aria-hidden="true">
@@ -56,29 +56,29 @@
     <!-- 2 -->
     <section class="slide" aria-label="The problem">
       <div class="slide-body">
-        <p class="eyebrow">02 — The site</p>
+        <p class="eyebrow">02 — The problem</p>
         <h2>The south pole hides behind its own ground.</h2>
-        <p class="quiet lead-in">The Sun and Earth stay low. A ridge a few kilometres away can decide whether a crew has light, and whether Earth is in view.</p>
+        <p class="quiet lead-in">The Sun and Earth stay low. A ridge a few kilometres away can decide whether a lander has power, and whether it can talk to Earth. Checking one site and date today means juggling several expert tools.</p>
         <ol class="steps">
           <li>
             <span class="num">01</span>
             <div>
               <h3>Ground</h3>
-              <p>Slope, roughness, and whether that LOLA pixel was actually measured.</p>
+              <p>How steep and rough it is, and whether that spot was really measured.</p>
             </div>
           </li>
           <li>
             <span class="num">02</span>
             <div>
               <h3>Sun</h3>
-              <p>Time above the local horizon, and the longest stretch of darkness.</p>
+              <p>How long it clears the surrounding terrain, and the longest darkness a battery must survive.</p>
             </div>
           </li>
           <li>
             <span class="num">03</span>
             <div>
               <h3>Earth</h3>
-              <p>Time the centre of Earth clears that same horizon.</p>
+              <p>How long Earth is in view for direct radio contact.</p>
             </div>
           </li>
         </ol>
@@ -86,50 +86,80 @@
     </section>
 
     <!-- 3 -->
-    <section class="slide" aria-label="What LUNARIS does">
-      <div class="slide-body split">
-        <div>
-          <p class="eyebrow">03 — The console</p>
-          <h2>One tile. One horizon. One place to read it.</h2>
-          <p class="quiet lead-in">LUNARIS stands on the NASA LOLA Site01 tile, builds the terrain horizon, and compares it with JPL directions for the Sun and Earth.</p>
-          <p class="tile-name">Site01 · Connecting Ridge</p>
-          <p class="tile-meta">16 km × 16 km · 5 metres · south polar stereographic</p>
+    <section class="slide" aria-label="Introduction">
+      <div class="slide-body">
+        <p class="eyebrow">03 — Introduction</p>
+        <h2>A shortlist, then one click into Compare.</h2>
+        <p class="quiet lead-in">Two additions sit on the same Site01 analysis. The mission form opens with four named points on Connecting Ridge. The Explorer sends the point you click into the ranking list, so the coordinates are not copied by hand.</p>
+        <div class="split intro-split">
+          <div>
+            <p class="col-label">Curated landing points</p>
+            <ul class="gates">
+              <li><b>Site01 centre</b> tile centre, the Horizons check</li>
+              <li><b>Poleward ridge</b> 4 km toward the pole</li>
+              <li><b>Ridge flank</b> 4 km across the tile</li>
+              <li><b>Outer ridge</b> 5.7 km from the centre</li>
+            </ul>
+          </div>
+          <div>
+            <p class="col-label">Send to Compare</p>
+            <ul class="steps intro-steps">
+              <li>
+                <span class="num">01</span>
+                <div>
+                  <h3>Click the map</h3>
+                  <p>The Explorer reads that pixel on the 5 m LOLA tile.</p>
+                </div>
+              </li>
+              <li>
+                <span class="num">02</span>
+                <div>
+                  <h3>Send to Compare</h3>
+                  <p>The point is added to the list, up to six, and kept in this browser.</p>
+                </div>
+              </li>
+              <li>
+                <span class="num">03</span>
+                <div>
+                  <h3>Rank them</h3>
+                  <p>Compare uses those coordinates. Nothing is pasted in.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
-        <ul class="menu">
-          <li><span>Explore</span> elevation, slope, roughness, hazard class</li>
-          <li><span>Window</span> sunlight, longest darkness, Earth in view</li>
-          <li><span>Compare</span> up to six candidates, then move the landing day</li>
-          <li><span>Report</span> timeline, 3D site, printable mission summary</li>
-        </ul>
       </div>
     </section>
 
     <!-- 4 -->
-    <section class="slide" aria-label="How a site is scored">
+    <section class="slide" aria-label="When plans change">
       <div class="slide-body">
-        <p class="eyebrow">04 — The decision</p>
-        <h2>Eligible first. Ranked second.</h2>
-        <div class="split score-split">
-          <div>
-            <p class="col-label">Gates · team illustration</p>
-            <ul class="gates">
-              <li><b>70%</b> of the window in sunlight</li>
-              <li><b>48 h</b> longest darkness, at most</li>
-              <li><b>20%</b> of the window with Earth in view</li>
-              <li><b>80%</b> favorable ground within 100 m</li>
-            </ul>
-          </div>
-          <div>
-            <p class="col-label">Weights · sum to 1</p>
-            <ul class="weights">
-              <li><span>Sunlight</span><b>0.35</b></li>
-              <li><span>Darkness</span><b>0.25</b></li>
-              <li><span>Earth</span><b>0.20</b></li>
-              <li><span>Terrain</span><b>0.20</b></li>
-            </ul>
-          </div>
-        </div>
-        <p class="footnote">Each contribution is weight × that factor’s score, from 0 to 1. The total summarises geometry for the chosen window. These gates are the team’s illustration for the challenge.</p>
+        <p class="eyebrow">04 — When plans change</p>
+        <h2>The launch slips. Does the site still work?</h2>
+        <ol class="steps">
+          <li>
+            <span class="num">01</span>
+            <div>
+              <h3>Same site, new date</h3>
+              <p>The Slip Planner tests 120 landing dates against your must-haves and shows which still pass.</p>
+            </div>
+          </li>
+          <li>
+            <span class="num">02</span>
+            <div>
+              <h3>Same date, new spot</h3>
+              <p>It searches every 100 m square within 3 km for the nearest point that passes.</p>
+            </div>
+          </li>
+          <li>
+            <span class="num">03</span>
+            <div>
+              <h3>Side by side</h3>
+              <p>Compare up to six points. Each must pass every must-have, then a score you can read ranks them: weight × factor.</p>
+            </div>
+          </li>
+        </ol>
+        <p class="footnote">Example must-haves: 70% of the window in sunlight, at most 48 h of darkness, 20% with Earth in view, 80% favorable ground within 100 m. These are the team’s examples, not NASA requirements.</p>
       </div>
     </section>
 
@@ -137,10 +167,13 @@
     <section class="slide slide-demo" data-demo aria-label="Live application">
       <div class="demo-bar">
         <div>
-          <p class="eyebrow">05 — Live application</p>
-          <p class="demo-path">Mission console <span aria-hidden="true">→</span> Explorer <span aria-hidden="true">→</span> Analysis <span aria-hidden="true">→</span> Comparison</p>
+          <p class="eyebrow">05 — Demo</p>
+          <p class="demo-path">Mission <span aria-hidden="true">→</span> Analyze <span aria-hidden="true">→</span> Slip Planner <span aria-hidden="true">→</span> Compare</p>
         </div>
-        <a class="text-link" id="open-app" href="#" target="_blank" rel="noopener noreferrer">Open in a new tab</a>
+        <div class="demo-actions">
+          <button class="text-link" id="demo-toggle" type="button" hidden></button>
+          <a class="text-link" id="open-app" href="#" target="_blank" rel="noopener noreferrer">Open the live app</a>
+        </div>
       </div>
       <div class="demo-frame" id="demo-frame"></div>
     </section>
@@ -154,17 +187,17 @@
           <article>
             <p class="col-label sun">Live geometry</p>
             <h3>JPL NAIF SPICE</h3>
-            <p>DE421, in the same MOON_ME frame as the LOLA tile. Sun and Earth from the surface point, with light time.</p>
+            <p>NASA’s own toolkit gives the Sun and Earth directions from the landing point, in the same reference frame as the terrain. Earth’s libration is included.</p>
           </article>
           <article>
             <p class="col-label earth">Independent check</p>
             <h3>JPL Horizons</h3>
-            <p>108 saved samples for Site01 and Apollo 11. The Validation page recomputes them. The planner keeps its own ephemeris.</p>
+            <p>108 saved NASA answers for Site01 and Apollo 11. The Validation page recomputes them live: agreement to about 0.00001°.</p>
           </article>
           <article>
-            <p class="col-label">Picture, separate</p>
-            <h3>Moon Trek</h3>
-            <p>LRO WAC tiles draw the globe. Slope, horizon, sunlight, and the score come from the LOLA tile and SPICE.</p>
+            <p class="col-label">Honest limits</p>
+            <h3>What we do not claim</h3>
+            <p>Terrain is checked inside the 16 km area, so sunlight and Earth figures are best-case. Sunlight is not power, and Earth in view is not a radio link.</p>
           </article>
         </div>
       </div>
@@ -175,8 +208,8 @@
       <div class="slide-body close-layout">
         <div>
           <p class="eyebrow">07 — Team Alpha 8</p>
-          <h2>The console is the demo.</h2>
-          <p class="quiet lead-in">High-resolution landing analysis uses the Site01 5 m tile. The global Moon view is the picture of where that tile sits.</p>
+          <h2>Fast answers when plans change.</h2>
+          <p class="quiet lead-in">For planners, a quick check of sites and dates. For classrooms, a way to see why the south pole is hard. Next: wider terrain for distant mountains, and more landing areas.</p>
           <div class="links">
             <a class="btn" id="close-app" href="#" target="_blank" rel="noopener noreferrer">Open the console</a>
             <a class="btn ghost" href="https://github.com/Raptiledev/Lunaritic" target="_blank" rel="noopener noreferrer">Repository</a>

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check, Plus, Trash2, X } from "lucide-react";
 import { api } from "@/services/api";
+import { useCompareList } from "@/context/compareList";
 import { missionStartIso, useMission } from "@/context/mission";
 import { fmtDuration, useAnalysis } from "@/context/analysis";
 import { useRequirements } from "@/components/planner/planner";
@@ -24,12 +25,12 @@ function Contrib({ c }: { c: ScoredCandidate }) {
       <div className="flex h-2 overflow-hidden rounded-full bg-night-800">
         {FACTOR_META.map((f) => (
           <span key={f.id} className={colors[f.id]} style={{ width: `${(c.contributions[f.id] ?? 0) * 100}%` }}
-            title={`${f.label}: ${((c.contributions[f.id] ?? 0) * 100).toFixed(1)} points of overall`} />
+            title={`${f.label}: adds ${((c.contributions[f.id] ?? 0) * 100).toFixed(1)} points to the overall score`} />
         ))}
       </div>
       <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[10px] text-bone-faint">
         {FACTOR_META.map((f) => (
-          <span key={f.id}><span className={f.tone}>{f.label}</span> {scorePct(c.scores[f.id])} × w → {scorePct(c.contributions[f.id])}</span>
+          <span key={f.id}><span className={f.tone}>{f.label}</span> {scorePct(c.scores[f.id])} × weight = {scorePct(c.contributions[f.id])}</span>
         ))}
       </div>
     </div>
@@ -38,10 +39,10 @@ function Contrib({ c }: { c: ScoredCandidate }) {
 
 export default function ComparisonPage() {
   const { mission, update } = useMission();
+  const { drafts, setDrafts, hydrated, stored } = useCompareList();
   const a = useAnalysis();
   const { req, update: setReq } = useRequirements();
   const { weights, normalised, update: setW, reset: resetW } = useWeights();
-  const [drafts, setDrafts] = useState<Draft[]>([newDraft("Mission target"), newDraft("Alt A")]);
   const [seeded, setSeeded] = useState(false);
   const [result, setResult] = useState<CompareResponse | null>(null);
   const [loading, setLoading] = useState(false);
@@ -53,14 +54,15 @@ export default function ComparisonPage() {
   const ready = !a.problems.length && a.site && start && stop;
 
   useEffect(() => {
-    if (seeded || !mission.latitude || !mission.longitude) return;
+    if (!hydrated || stored || seeded || !mission.latitude || !mission.longitude) return;
     setDrafts((d) => {
+      if (d[0] && d[0].latitude !== "" && d[0].longitude !== "") return d;
       const copy = [...d];
       copy[0] = { ...copy[0], name: mission.name || "Mission target", latitude: mission.latitude, longitude: mission.longitude };
       return copy;
     });
     setSeeded(true);
-  }, [mission.latitude, mission.longitude, mission.name, seeded]);
+  }, [hydrated, stored, mission.latitude, mission.longitude, mission.name, seeded, setDrafts]);
 
   function setDraft(id: string, p: Partial<Draft>) {
     setDrafts((all) => all.map((d) => (d.id === id ? { ...d, ...p } : d)));
@@ -95,10 +97,11 @@ export default function ComparisonPage() {
   return (
     <div className="space-y-5">
       <div className="max-w-3xl">
-        <p className="eyebrow">Compare · explainable scoring</p>
+        
         <h1 className="mt-2 font-display text-2xl font-semibold tracking-tightish">Rank landing points with rules you can read</h1>
         <p className="mt-2 text-sm leading-relaxed text-bone-muted">
-          Hard requirements decide who is eligible. Soft scores only rank sites that pass every gate. Every contribution is weight × factor, not a black-box AI score.
+          First, each point has to meet every must-have requirement. Points that pass are then ranked by a score built from four factors,
+          and you decide how much each factor counts.
         </p>
       </div>
 
@@ -113,7 +116,7 @@ export default function ComparisonPage() {
       <section className="grid gap-4 lg:grid-cols-2">
         <div className="panel p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="eyebrow">Candidates</h2>
+            <h2 className="eyebrow">Landing points to compare</h2>
             <button className="btn px-2 py-1" disabled={drafts.length >= 6} onClick={() => setDrafts((d) => [...d, newDraft(`Alt ${d.length}`)])}>
               <Plus size={12} aria-hidden /> Add
             </button>
@@ -133,14 +136,14 @@ export default function ComparisonPage() {
               </div>
             ))}
           </div>
-          <p className="mt-3 text-[11px] text-bone-faint">Pick points in the Explorer and paste their lat/lon here, or use Set as mission target then open Compare.</p>
+          <p className="mt-3 text-[11px] text-bone-faint">The first row starts as your mission target. Send other points from the Explorer with Send to Compare.</p>
         </div>
 
         <div className="space-y-4">
           <div className="panel p-4">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="eyebrow">Hard requirements</h2>
-              <span className="text-[11px] text-bone-faint">same as Slip Planner</span>
+              <h2 className="eyebrow">Must-have requirements</h2>
+              <span className="text-[11px] text-bone-faint">shared with the Slip Planner</span>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {([
@@ -162,7 +165,7 @@ export default function ComparisonPage() {
 
           <div className="panel p-4">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="eyebrow">Soft-score weights</h2>
+              <h2 className="eyebrow">How much each factor counts</h2>
               <button className="text-[11px] text-bone-muted hover:text-bone" onClick={resetW}>Reset</button>
             </div>
             <div className="space-y-2">
@@ -175,25 +178,35 @@ export default function ComparisonPage() {
                 </label>
               ))}
             </div>
-            <p className="mt-2 text-[11px] text-bone-faint">Sliders are relative; they are normalised to 100% before scoring.</p>
+            <p className="mt-2 text-[11px] text-bone-faint">The sliders are relative to each other. The percentages on the right always add up to 100%.</p>
           </div>
         </div>
       </section>
 
       <div className="flex flex-wrap items-center gap-3">
         <button className="btn btn-primary" disabled={!ready || loading} onClick={run}>
-          {loading ? "Scoring candidates…" : "Compare candidates"}
+          {loading ? "Comparing…" : "Compare these points"}
         </button>
         {error && <span className="text-sm text-haz-high">{error}</span>}
         {result && !loading && (
           <span className="text-[11px] text-bone-muted">
-            {result.eligible_count} of {result.candidates.length} eligible · {result.start_utc.slice(0, 10)} → {result.stop_utc.slice(0, 10)} · step {result.step_minutes} min
+            {result.eligible_count} of {result.candidates.length} meet every requirement · {result.start_utc.slice(0, 10)} → {result.stop_utc.slice(0, 10)} · checked every {result.step_minutes} min
           </span>
         )}
       </div>
 
       {result && (
         <section className="space-y-4">
+          {(() => {
+            const best = result.candidates.filter((c) => c.eligible).sort((x, y) => x.rank - y.rank)[0];
+            return (
+              <p className="panel p-4 text-sm text-bone">
+                {best
+                  ? <>Best option: {best.name}. It meets every requirement, with sunlight for {pct(best.metrics.sun_lit)} of the window, a longest darkness of {fmtDuration(best.metrics.sun_dark_h)} and Earth in view for {pct(best.metrics.earth_view)}. Overall score {scorePct(best.overall)}.</>
+                  : "None of these points meets every requirement. Loosen a requirement or try other points."}
+              </p>
+            );
+          })()}
           <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
             {result.candidates.map((c) => (
               <article key={`${c.rank}-${c.latitude}-${c.longitude_east}`} className={`panel overflow-hidden ${c.eligible ? "" : "opacity-80"}`}>
@@ -203,13 +216,13 @@ export default function ComparisonPage() {
                       <span className="num text-lg text-bone">#{c.rank}</span>
                       <span className="text-sm text-bone">{c.name}</span>
                       {c.eligible
-                        ? <span className="chip border-haz-ok/40 text-haz-ok"><Check size={11} />eligible</span>
-                        : <span className="chip border-haz-high/40 text-haz-high"><X size={11} />fails gates</span>}
+                        ? <span className="chip border-haz-ok/40 text-haz-ok"><Check size={11} />meets requirements</span>
+                        : <span className="chip border-haz-high/40 text-haz-high"><X size={11} />fails requirements</span>}
                     </div>
                     <div className="num mt-0.5 text-[11px] text-bone-faint">{c.latitude.toFixed(4)}°, {c.longitude_east.toFixed(3)}°E</div>
                   </div>
                   <div className="text-right">
-                    <div className="eyebrow">Overall</div>
+                    <div className="eyebrow">Overall score</div>
                     <div className="num text-2xl">{scorePct(c.overall)}</div>
                   </div>
                 </div>
@@ -218,18 +231,18 @@ export default function ComparisonPage() {
                   <dl className="num grid grid-cols-2 gap-x-3 gap-y-1 text-[11px]">
                     <dt className="font-sans text-bone-muted">Sunlight <Gate ok={c.gates.sunlight} /></dt>
                     <dd className="text-sun">{pct(c.metrics.sun_lit)}</dd>
-                    <dt className="font-sans text-bone-muted">Longest dark <Gate ok={c.gates.darkness} /></dt>
+                    <dt className="font-sans text-bone-muted">Longest darkness <Gate ok={c.gates.darkness} /></dt>
                     <dd>{fmtDuration(c.metrics.sun_dark_h)}</dd>
-                    <dt className="font-sans text-bone-muted">Earth <Gate ok={c.gates.earth} /></dt>
+                    <dt className="font-sans text-bone-muted">Earth in view <Gate ok={c.gates.earth} /></dt>
                     <dd className="text-earth">{pct(c.metrics.earth_view)}</dd>
-                    <dt className="font-sans text-bone-muted">Favorable <Gate ok={c.gates.terrain} /></dt>
-                    <dd>{pct(c.metrics.favorable_share)}{c.slope_p95_deg != null ? ` · p95 ${c.slope_p95_deg.toFixed(1)}°` : ""}</dd>
+                    <dt className="font-sans text-bone-muted">Favorable ground <Gate ok={c.gates.terrain} /></dt>
+                    <dd>{pct(c.metrics.favorable_share)}{c.slope_p95_deg != null ? ` · 95% of slopes below ${c.slope_p95_deg.toFixed(1)}°` : ""}</dd>
                   </dl>
                   {!c.eligible && (
-                    <p className="text-[11px] text-haz-high">Fails: {c.failed_gates.join(", ")}. Overall is shown for transparency but this site is not ranked as usable.</p>
+                    <p className="text-[11px] text-haz-high">Does not meet: {c.failed_gates.join(", ")}. The score is shown for reference only; this point is not usable under your requirements.</p>
                   )}
                   {c.upper_bound && (
-                    <p className="text-[11px] text-bone-faint">Visibility figures are upper bounds ({(c.horizon_incomplete_fraction * 100).toFixed(0)}% of rays leave the tile).</p>
+                    <p className="text-[11px] text-bone-faint">Sunlight and Earth figures are best-case (in {(c.horizon_incomplete_fraction * 100).toFixed(0)}% of directions our terrain data stops at the edge of the area we check).</p>
                   )}
                   <button className="btn" onClick={() => useAsTarget(c)}>Set as mission target</button>
                 </div>
